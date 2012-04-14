@@ -1104,7 +1104,7 @@ static int msm_rotator_do_rotate(unsigned long arg)
 		break;
 	default:
 		rc = -EINVAL;
-		pr_err("%s(): Unsupported format\n", __func__);
+		pr_err("%s(): Unsupported format %u\n", __func__, format);
 		goto do_rotate_exit;
 	}
 
