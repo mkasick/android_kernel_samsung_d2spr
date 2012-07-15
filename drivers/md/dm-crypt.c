@@ -852,7 +852,7 @@ static struct bio *crypt_alloc_buffer(struct dm_crypt_io *io, unsigned size,
 		 * return a partially-allocated bio.  The caller will then try
 		 * to allocate more bios while submitting this partial bio.
 		 */
-			gfp_mask = (gfp_mask | __GFP_NOWARN) & ~__GFP_WAIT;
+		gfp_mask = (gfp_mask | __GFP_NOWARN) & ~__GFP_WAIT;
 
 		len = (size > PAGE_SIZE) ? PAGE_SIZE : size;
 
@@ -1651,27 +1651,20 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	cc->start = tmpll;
 
 	ret = -ENOMEM;
-#if 1
-	cc->io_queue = create_singlethread_workqueue("kcryptd_io");
-#else
 	cc->io_queue = alloc_workqueue("kcryptd_io",
 				       WQ_NON_REENTRANT|
 				       WQ_MEM_RECLAIM,
 				       1);
-#endif
 	if (!cc->io_queue) {
 		ti->error = "Couldn't create kcryptd io queue";
 		goto bad;
 	}
-#if 1
-	cc->crypt_queue = create_singlethread_workqueue("kcryptd");
-#else
+
 	cc->crypt_queue = alloc_workqueue("kcryptd",
 					  WQ_NON_REENTRANT|
 					  WQ_CPU_INTENSIVE|
 					  WQ_MEM_RECLAIM,
 					  1);
-#endif
 	if (!cc->crypt_queue) {
 		ti->error = "Couldn't create kcryptd queue";
 		goto bad;
