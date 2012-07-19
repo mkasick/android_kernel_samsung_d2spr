@@ -885,6 +885,13 @@ int sec_debug_is_enabled(void)
 	return enable;
 }
 
+#ifdef CONFIG_SEC_SSR_DEBUG_LEVEL_CHK
+int sec_debug_is_enabled_for_ssr(void)
+{
+	return enable_user;
+}
+#endif
+
 /* klaatu - schedule log */
 #ifdef CONFIG_SEC_DEBUG_SCHED_LOG
 void __sec_debug_task_sched_log(int cpu, struct task_struct *task,

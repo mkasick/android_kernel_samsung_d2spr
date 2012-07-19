@@ -2247,6 +2247,11 @@ config SEC_PERIPHERAL_SECURE_CHK
 	help
 	  To check the authentication of peripheral image.
 
+config SEC_SSR_DEBUG_LEVEL_CHK
+	bool "SSR DEBUG LEVEL check"
+	help
+	  To check the level of debug for SSR.
+
 config MSM_DCVS
 	bool "Use MSM DCVS for CPU/GPU Frequency control"
 	depends on MSM_SCM

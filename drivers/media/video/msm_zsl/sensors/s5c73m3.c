@@ -96,6 +96,7 @@ struct s5c73m3_ctrl {
 
 	u8 sensor_fw[10];
 	u8 phone_fw[10];
+	u32 crc_table[256];
 	u32 sensor_size;
 };
 
@@ -354,6 +355,92 @@ static int s5c73m3_set_timing_register_for_vdd(void)
 
 	return err;
 }
+
+static int s5c73m3_i2c_check_status_with_CRC(void)
+{
+	int err = 0;
+	int index = 0;
+	u16 status = 0;
+	u16 i2c_status = 0;
+	u16 i2c_seq_status = 0;
+
+	do {
+		err = s5c73m3_read(0x0009, S5C73M3_STATUS, &status);
+		err = s5c73m3_read(0x0009,
+			S5C73M3_I2C_ERR_STATUS, &i2c_status);
+		if (i2c_status & ERROR_STATUS_CHECK_BIN_CRC) {
+			CAM_DBG_M("failed to check CRC value of ISP Ram\n");
+			err = -1;
+			break;
+		}
+
+		if (status == 0xffff)
+			break;
+
+		index++;
+		udelay(500);
+	} while (index < 2000);	/* 1 sec */
+
+	if (index >= 2000) {
+		err = s5c73m3_read(0x0009,
+			S5C73M3_I2C_ERR_STATUS, &i2c_status);
+		err = s5c73m3_read(0x0009,
+			S5C73M3_I2C_SEQ_STATUS, &i2c_seq_status);
+		CAM_DBG_M("TimeOut!! index:%d,status:%#x\n",
+			index,
+			status);
+		CAM_DBG_M("i2c_stauts:%#x,i2c_seq_status:%#x\n",
+			i2c_status,
+			i2c_seq_status);
+
+		err = -1;
+	}
+
+	return err;
+}
+
+void s5c73m3_make_CRC_table(u32 *table, u32 id)
+{
+	u32 i, j, k;
+
+	for (i = 0; i < 256; ++i) {
+		k = i;
+		for (j = 0; j < 8; ++j) {
+			if (k & 1)
+				k = (k >> 1) ^ id;
+			else
+				k >>= 1;
+		}
+		table[i] = k;
+	}
+}
+
+static int s5c73m3_reset_module(bool powerReset)
+{
+	int err = 0;
+
+	CAM_DBG_M("E\n");
+
+	if (powerReset) {
+		s5c73m3_ctrl->sensordata->sensor_platform_info \
+			->sensor_power_off(0);
+		s5c73m3_ctrl->sensordata->sensor_platform_info \
+			->sensor_power_on(0, 0);
+		s5c73m3_ctrl->sensordata->sensor_platform_info \
+			->sensor_power_on(0, 1);
+	} else {
+		s5c73m3_ctrl->sensordata->sensor_platform_info \
+		->sensor_isp_reset();
+	}
+
+	err = s5c73m3_set_timing_register_for_vdd();
+	CHECK_ERR(err);
+
+	CAM_DBG_M("X\n");
+
+	return err;
+}
+
 void s5c73m3_sensor_reset(void)
 {
 	s5c73m3_ctrl->sensordata->sensor_platform_info->sensor_isp_reset();
@@ -2300,8 +2387,32 @@ static int s5c73m3_get_sensor_fw_binary()
 	mm_segment_t old_fs;
 	long ret = 0;
 	char l_fw_path[40] = {0};
+	u8 mem0 = 0, mem1 = 0;
+	u32 CRC = 0;
+	u32 DataCRC = 0;
+	u32 IntOriginalCRC = 0;
+	u32 crc_index = 0;
+	int retryCnt = 2;
 
 	CAM_DBG_M("Entered\n");
+
+	if (s5c73m3_ctrl->sensor_fw[0] == 'O') {
+		sprintf(l_fw_path, "%sSlimISP_G%c.bin",
+			S5C73M3_FW_REQUEST_SECOND_PATH,
+			s5c73m3_ctrl->sensor_fw[1]);
+	} else if (s5c73m3_ctrl->sensor_fw[0] == 'S') {
+		sprintf(l_fw_path, "%sSlimISP_Z%c.bin",
+			S5C73M3_FW_REQUEST_SECOND_PATH,
+			s5c73m3_ctrl->sensor_fw[1]);
+	} else {
+		sprintf(l_fw_path, "%sSlimISP_%c%c.bin",
+			S5C73M3_FW_REQUEST_SECOND_PATH,
+			s5c73m3_ctrl->sensor_fw[0],
+			s5c73m3_ctrl->sensor_fw[1]);
+	}
+
+	/* Make CRC Table */
+	s5c73m3_make_CRC_table((u32 *)&s5c73m3_ctrl->crc_table, 0xEDB88320);
 
 	/*ARM go*/
 	err = s5c73m3_write(0x3000, 0x0004, 0xFFFF);
@@ -2369,25 +2480,17 @@ static int s5c73m3_get_sensor_fw_binary()
 
 	mdelay(200);
 
-	old_fs = get_fs();
-	set_fs(KERNEL_DS);
-
-	sprintf(l_fw_path, "%sSlimISP_%c%c.bin",
-		S5C73M3_FW_REQUEST_SECOND_PATH,
-		s5c73m3_ctrl->sensor_fw[0],
-		s5c73m3_ctrl->sensor_fw[1]);
-
-	fp = filp_open(l_fw_path, O_WRONLY|O_CREAT, 0644);
-	if (IS_ERR(fp) || fp == NULL) {
-		cam_err("failed to open %s, err %ld\n",
-			l_fw_path, PTR_ERR(fp));
-		err = -EINVAL;
-		goto out;
-	}
+retry:
+	mem0 = 0, mem1 = 0;
+	CRC = 0;
+	DataCRC = 0;
+	IntOriginalCRC = 0;
+	crc_index = 0;
 
 	/* SPI Copy mode ready I2C CMD */
 	err = s5c73m3_writeb(0x0924, 0x0000);
 	CHECK_ERR(err);
+	CAM_DBG_M("sent SPI ready CMD\n");
 
 	rxSize = 64*1024;
 	mdelay(10);
@@ -2398,8 +2501,61 @@ static int s5c73m3_get_sensor_fw_binary()
 		s5c73m3_ctrl->sensor_size, rxSize);
 	CHECK_ERR(err);
 
-	ret = vfs_write(fp, (char __user *)Fbuf,
-		s5c73m3_ctrl->sensor_size, &fp->f_pos);
+	CRC = ~CRC;
+	for (crc_index = 0; crc_index < (s5c73m3_ctrl->sensor_size-4)/2
+		; crc_index++) {
+		/*low byte*/
+		mem0 = (unsigned char)(Fbuf[crc_index*2] & 0x00ff);
+		/*high byte*/
+		mem1 = (unsigned char)(Fbuf[crc_index*2+1] & 0x00ff);
+		CRC = s5c73m3_ctrl->crc_table[(CRC ^ (mem0)) & 0xFF] \
+			^ (CRC >> 8);
+		CRC = s5c73m3_ctrl->crc_table[(CRC ^ (mem1)) & 0xFF] \
+			^ (CRC >> 8);
+	}
+	CRC = ~CRC;
+
+	DataCRC = (CRC&0x000000ff)<<24;
+	DataCRC += (CRC&0x0000ff00)<<8;
+	DataCRC += (CRC&0x00ff0000)>>8;
+	DataCRC += (CRC&0xff000000)>>24;
+	CAM_DBG_M("made CSC value by S/W = 0x%x\n", DataCRC);
+
+	IntOriginalCRC = (Fbuf[s5c73m3_ctrl->sensor_size-4]&0x00ff)<<24;
+	IntOriginalCRC += (Fbuf[s5c73m3_ctrl->sensor_size-3]&0x00ff)<<16;
+	IntOriginalCRC += (Fbuf[s5c73m3_ctrl->sensor_size-2]&0x00ff)<<8;
+	IntOriginalCRC += (Fbuf[s5c73m3_ctrl->sensor_size-1]&0x00ff);
+	CAM_DBG_M("Original CRC Int = 0x%x\n", IntOriginalCRC);
+
+	old_fs = get_fs();
+	set_fs(KERNEL_DS);
+
+	if (IntOriginalCRC == DataCRC) {
+		fp = filp_open(l_fw_path, O_WRONLY|O_CREAT, 0644);
+		if (IS_ERR(fp) || fp == NULL) {
+			cam_err("failed to open %s, err %ld\n",
+				l_fw_path, PTR_ERR(fp));
+			err = -EINVAL;
+			goto out;
+		}
+
+		ret = vfs_write(fp, (char __user *)Fbuf,
+			s5c73m3_ctrl->sensor_size, &fp->f_pos);
+
+		memcpy(s5c73m3_ctrl->phone_fw,
+			s5c73m3_ctrl->sensor_fw,
+			S5C73M3_FW_VER_LEN);
+		s5c73m3_ctrl->phone_fw[S5C73M3_FW_VER_LEN+1] = ' ';
+
+		CAM_DBG_M("Changed to Phone_version = %s\n",
+			s5c73m3_ctrl->phone_fw);
+	} else {
+		if (retryCnt > 0) {
+			set_fs(old_fs);
+			retryCnt--;
+			goto retry;
+		}
+	}
 
 	if (fp != NULL)
 		filp_close(fp, current->files);
@@ -2744,12 +2900,10 @@ request_fw:
 				s5c73m3_ctrl->fw_index = S5C73M3_IN_DATA;
 			}
 		} else {
-			CAM_DBG_M("get new fw to F-ROM : %s Version\n",
+			CAM_DBG_M("can't open %s. download from F-ROM\n",
 				s5c73m3_ctrl->sensor_fw);
 
-			s5c73m3_sensor_reset();
-			retVal = s5c73m3_set_timing_register_for_vdd();
-			CHECK_ERR(retVal);
+			s5c73m3_reset_module(true);
 
 			retVal = s5c73m3_get_sensor_fw_binary();
 			CHECK_ERR(retVal);
@@ -2936,16 +3090,13 @@ static int s5c73m3_check_fw(const struct msm_camera_sensor_info *data,
 		&s5c73m3_ctrl->phone_fw);
 
 	retVal = s5c73m3_check_fw_date();
-	s5c73m3_sensor_reset();
-	err = s5c73m3_set_timing_register_for_vdd();
-	CHECK_ERR(err);
 
 	/* retVal = 0 : Same Version
 	    retVal < 0 : Phone Version is latest Version than sensorFW.
 	    retVal > 0 : Sensor Version is latest version than phoenFW. */
 	if (retVal <= 0 || download || s5c73m3_ctrl->fw_index == 0) {
 		if (s5c73m3_ctrl->fw_index == 0)
-			cam_err("Loading From PhoneFW forced......\n");
+			CAM_DBG_M("Loading From PhoneFW forced......\n");
 		else
 			CAM_DBG_M("Loading From PhoneFW......\n");
 
@@ -2953,6 +3104,7 @@ static int s5c73m3_check_fw(const struct msm_camera_sensor_info *data,
 			s5c73m3_ctrl->phone_fw[0] == 'G' ||
 			s5c73m3_ctrl->phone_fw[0] == 'S' ||
 			s5c73m3_ctrl->phone_fw[0] == 'O') {
+			s5c73m3_reset_module(false);
 			err = s5c73m3_SPI_booting();
 			if (err < 0) {
 				cam_err("failed s5c73m3_SPI_booting!!\n");
@@ -2971,13 +3123,7 @@ static int s5c73m3_check_fw(const struct msm_camera_sensor_info *data,
 		}
 	} else {
 		CAM_DBG_M("Loading From SensorFW......\n");
-#if defined(TEMP_REMOVE)
-		err = s5c73m3_SPI_booting_by_ISP();
-		if (err < 0) {
-			cam_err("failed s5c73m3_SPI_booting_by_ISP!!\n");
-			return -EIO;
-		}
-#else
+		s5c73m3_reset_module(true);
 		err = s5c73m3_get_sensor_fw_binary();
 		if (err < 0) {
 			cam_err("failed s5c73m3_get_sensor_fw_binary!!\n");
@@ -3016,7 +3162,6 @@ static int s5c73m3_check_fw(const struct msm_camera_sensor_info *data,
 		if (buf)
 			vfree(buf);
 		}
-#endif
 	}
 #if defined(TEMP_REMOVE)
 	data->sensor_platform_info->sensor_get_fw(&s5c73m3_ctrl->sensor_fw,
@@ -3178,24 +3323,23 @@ static int s5c73m3_sensor_init_probe(const struct msm_camera_sensor_info *data)
 		return -EIO;
 	}
 
-	rc = s5c73m3_wait_ISP_status();
+	rc = s5c73m3_i2c_check_status_with_CRC();
 	if (rc < 0) {
 		cam_err("ISP is not ready. retry loading fw!!\n");
 		/* retry */
 		retVal = s5c73m3_check_fw_date();
-		s5c73m3_sensor_reset();
-		rc = s5c73m3_set_timing_register_for_vdd();
-		CHECK_ERR(rc);
 
 		/* retVal = 0 : Same Version
 		retVal < 0 : Phone Version is latest Version than sensorFW.
 		retVal > 0 : Sensor Version is latest version than phoenFW. */
 		if (retVal <= 0) {
 			cam_err("Loading From PhoneFW......\n");
+			s5c73m3_reset_module(false);
 			rc = s5c73m3_SPI_booting();
 			CHECK_ERR(rc);
 		} else {
 			cam_err("Loading From SensorFW......\n");
+			s5c73m3_reset_module(true);
 			rc = s5c73m3_get_sensor_fw_binary();
 			CHECK_ERR(rc);
 		}

@@ -4669,8 +4669,10 @@ static int __init hdmi_msm_init(void)
 	 * allocs and returns ptr
 	*/
 	hdmi_work_queue = create_workqueue("hdmi_hdcp");
-	if (!hdmi_work_queue)
+	if (!hdmi_work_queue) {
+		rc = -ENOMEM;
 		goto init_exit;
+	}
 	external_common_state->hpd_feature = hdmi_msm_hpd_feature;
 
 	rc = platform_driver_register(&this_driver);

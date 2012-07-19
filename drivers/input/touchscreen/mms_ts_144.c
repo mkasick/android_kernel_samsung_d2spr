@@ -2966,6 +2966,8 @@ static int __devinit mms_ts_probe(struct i2c_client *client,
 		info->max_y = 1280;
 	}
 
+	i2c_set_clientdata(client, info);
+
 	info->callbacks.inform_charger = melfas_ta_cb;
 	if (info->register_cb)
 		info->register_cb(&info->callbacks);
@@ -3008,8 +3010,6 @@ static int __devinit mms_ts_probe(struct i2c_client *client,
 	INIT_DELAYED_WORK(&info->work_dvfs_chg, change_dvfs_lock);
 	info->dvfs_lock_status = false;
 #endif
-
-	i2c_set_clientdata(client, info);
 
 #if ISC_DL_MODE
 	ret = mms_ts_fw_load(info);
