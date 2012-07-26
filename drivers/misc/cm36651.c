@@ -341,7 +341,7 @@ static int proximity_open_cancelation(struct cm36651_data *data)
 	}
 	ps_reg_setting[2][1] = data->prox_cal;
 	if (ps_reg_setting[2][1] != 0) /*If there is an offset cal data. */
-		ps_reg_setting[1][1] = 0x07;
+		ps_reg_setting[1][1] = 0x09;
 
 	pr_info("%s: proximity ps_data = %d, thresh = %d\n", __func__,
 		data->prox_cal, ps_reg_setting[1][1]);
@@ -363,7 +363,7 @@ static int proximity_store_cancelation(struct device *dev, bool do_calib)
 		mutex_lock(&cm36651->read_lock);
 		cm36651_i2c_read_byte(cm36651, CM36651_PS, &cm36651->prox_cal);
 		mutex_unlock(&cm36651->read_lock);
-		ps_reg_setting[1][1] = 0x07;
+		ps_reg_setting[1][1] = 0x09;
 	} else {
 		cm36651->prox_cal = 0;
 		ps_reg_setting[1][1] = cm36651->pdata->threshold;
