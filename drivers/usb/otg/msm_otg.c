@@ -1200,8 +1200,11 @@ static void msm_otg_start_peripheral(struct otg_transceiver *otg, int on)
 				dev_err(motg->otg.dev, "%s: Failed to vote for "
 					   "bus bandwidth %d\n", __func__, ret);
 		}
-		if (!motg->disable_peripheral)
+		if (!motg->disable_peripheral) {
+			pr_info("%s disable_peripheral: %x\n",
+				__func__, motg->disable_peripheral);
 			usb_gadget_vbus_connect(otg->gadget);
+		}
 		else
 			pr_info("USBLOCK: peripheral mode is blocked!!\n");
 	} else {

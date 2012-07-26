@@ -638,8 +638,32 @@ static int fsa9485_detect_dev(struct fsa9485_usbsw *usbsw)
 	if (val1 || val2) {
 		/* USB */
 		if (val1 & DEV_USB || val2 & DEV_T2_USB_MASK) {
-			dev_info(&client->dev, "usb connect\n");
+			dev_info(&client->dev, "usb connect path\n");
 
+			ret = i2c_smbus_write_byte_data(client,
+					FSA9485_REG_MANSW1, SW_AUDIO);
+			if (ret < 0)
+				dev_err(&client->dev,
+						"%s: err %d\n", __func__, ret);
+			ret = i2c_smbus_read_byte_data(client,
+					FSA9485_REG_CTRL);
+			if (ret < 0)
+				dev_err(&client->dev,
+						"%s: err %d\n", __func__, ret);
+			ret = i2c_smbus_write_byte_data(client,
+					FSA9485_REG_CTRL, ret & ~CON_MANUAL_SW);
+
+			msleep(10);
+
+			ret = i2c_smbus_write_byte_data(client,
+					FSA9485_REG_MANSW1, SW_AUTO);
+			if (ret < 0)
+				dev_err(&client->dev,
+						"%s: err %d\n", __func__, ret);
+
+			ret = i2c_smbus_write_byte_data(client,
+					FSA9485_REG_CTRL, 0x1E);
+			
 			if (pdata->usb_cb)
 				pdata->usb_cb(FSA9485_ATTACHED);
 			if (usbsw->mansw) {

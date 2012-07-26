@@ -300,6 +300,7 @@ static int hw_device_init(void __iomem *base)
  */
 static int hw_device_reset(struct ci13xxx *udc)
 {
+	printk(KERN_INFO "usb:: %s\n", __func__);
 	/* should flush & stop before reset */
 	hw_cwrite(CAP_ENDPTFLUSH, ~0, ~0);
 	hw_cwrite(CAP_USBCMD, USBCMD_RS, 0);
@@ -350,16 +351,28 @@ static int hw_device_reset(struct ci13xxx *udc)
  */
 static int hw_device_state(u32 dma)
 {
+
+	printk(KERN_INFO "usb:: %s dma: %x\n", __func__, dma);
 	if (dma) {
 		hw_cwrite(CAP_ENDPTLISTADDR, ~0, dma);
 		/* interrupt, error, port change, reset, sleep/suspend */
 		hw_cwrite(CAP_USBINTR, ~0,
 			     USBi_UI|USBi_UEI|USBi_PCI|USBi_URI|USBi_SLI);
 		hw_cwrite(CAP_USBCMD, USBCMD_RS, USBCMD_RS);
+
+		printk(KERN_INFO "usb:: %s hw_read(CAP_ENDPTLISTADDR, ~0): %x\n",
+			__func__, hw_cread(CAP_ENDPTLISTADDR, ~0));
+
 	} else {
 		hw_cwrite(CAP_USBCMD, USBCMD_RS, 0);
 		hw_cwrite(CAP_USBINTR, ~0, 0);
 	}
+
+	printk(KERN_INFO "usb:: %s hw_read(CAP_USBINTR, ~0): %x\n",
+			__func__, hw_cread(CAP_USBINTR, ~0));
+	printk(KERN_INFO "usb:: %s hw_read(CAP_USBCMD, USBCMD_RS): %x\n",
+			__func__, hw_cread(CAP_USBCMD, USBCMD_RS));
+
 	return 0;
 }
 
@@ -1929,6 +1942,7 @@ __acquires(udc->lock)
 	int retval;
 
 	trace("%p", udc);
+	printk(KERN_INFO "usb:: %s udc: %p\n", __func__, udc);
 
 	if (udc == NULL) {
 		err("EINVAL");
@@ -2774,6 +2788,7 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 	cdev = get_gadget_data(_gadget);
 #endif
 
+	printk(KERN_INFO "usb:: %s,%d\n", __func__, __LINE__);
 	if (!(udc->udc_driver->flags & CI13XXX_PULLUP_ON_VBUS))
 		return -EOPNOTSUPP;
 
@@ -2781,6 +2796,9 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 	udc->vbus_active = is_active;
 	if (udc->driver)
 		gadget_ready = 1;
+
+	printk(KERN_INFO "usb:: %s gadget_ready:%d, is_active:%d\n",
+		__func__, gadget_ready, is_active);
 	spin_unlock_irqrestore(udc->lock, flags);
 
 	if (gadget_ready) {
@@ -2791,6 +2809,8 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 #endif
 			pm_runtime_get_sync(&_gadget->dev);
 			hw_device_reset(udc);
+			printk(KERN_INFO "usb:: %s softconnect: %d\n",
+				__func__, udc->softconnect);
 			if (udc->softconnect)
 				hw_device_state(udc->ep0out.qh.dma);
 		} else {
@@ -2821,10 +2841,15 @@ static int ci13xxx_pullup(struct usb_gadget *_gadget, int is_active)
 	struct ci13xxx *udc = container_of(_gadget, struct ci13xxx, gadget);
 	unsigned long flags;
 
+	printk(KERN_INFO "usb:: %s is_active: %d\n", __func__, is_active);
 	spin_lock_irqsave(udc->lock, flags);
 	udc->softconnect = is_active;
 	if (((udc->udc_driver->flags & CI13XXX_PULLUP_ON_VBUS) &&
 			!udc->vbus_active) || !udc->driver) {
+		printk(KERN_INFO "usb:: %s udc->udc_driver->flags:%lx\n",
+			__func__, udc->udc_driver->flags);
+		printk(KERN_INFO "usb:: %s !udc->vbus_active:%x, !udc->driver:%x\n",
+			__func__, !udc->vbus_active, !udc->driver);
 		spin_unlock_irqrestore(udc->lock, flags);
 		return 0;
 	}

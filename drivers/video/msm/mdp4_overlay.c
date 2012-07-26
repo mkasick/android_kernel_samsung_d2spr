@@ -1726,6 +1726,10 @@ static int mdp4_overlay_validate_downscale(struct mdp_overlay *req,
 	unsigned long fillratex100, mdp_pixels_produced;
 	unsigned long mdp_clk_hz;
 
+	if (in_early_suspend == 1) {
+		pr_info("enter early suspend, don't use blt mode\n");
+		return 0;
+	}
 	pr_debug("%s: LCDC Mode Downscale validation with MDP Core"
 		" Clk rate\n", __func__);
 	pr_debug("src_w %u, src_h %u, dst_w %u, dst_h %u\n",
@@ -2780,6 +2784,11 @@ int mdp4_overlay_play(struct fb_info *info, struct msmfb_overlay_data *req)
 		mdp4_overlay_rgb_setup(pipe);	/* rgb pipe */
 	}
 
+	if (ctrl->panel_mode & MDP4_PANEL_LCDC)
+		mdp4_overlay_reg_flush(pipe, 0);
+	else if (ctrl->panel_mode & MDP4_PANEL_DSI_VIDEO)
+		mdp4_overlay_reg_flush(pipe, 0);
+
 	mdp4_mixer_stage_up(pipe);
 
 	if (pipe->mixer_num == MDP4_MIXER2) {
@@ -2803,16 +2812,13 @@ int mdp4_overlay_play(struct fb_info *info, struct msmfb_overlay_data *req)
 		/* primary interface */
 		ctrl->mixer0_played++;
 		if (ctrl->panel_mode & MDP4_PANEL_LCDC) {
-			mdp4_overlay_reg_flush(pipe, 0);
 			if (!mfd->use_ov0_blt)
 				mdp4_overlay_update_blt_mode(mfd);
 			mdp4_overlay_lcdc_vsync_push(mfd, pipe);
 		}
 #ifdef CONFIG_FB_MSM_MIPI_DSI
-		else if (ctrl->panel_mode & MDP4_PANEL_DSI_VIDEO) {
-			mdp4_overlay_reg_flush(pipe, 0);
+		else if (ctrl->panel_mode & MDP4_PANEL_DSI_VIDEO)
 			mdp4_overlay_dsi_video_vsync_push(mfd, pipe);
-		}
 #endif
 		else {
 			/* mddi & mipi dsi cmd mode */

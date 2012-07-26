@@ -233,6 +233,10 @@ ion_phys_addr_t ion_cp_allocate(struct ion_heap *heap,
 
 		cp_heap->allocated_bytes -= size;
 
+		printk(KERN_WARNING "heap %s failed to allocate size %lx"
+				"(total allocated_bytes %lx)\n",
+				heap->name, size, cp_heap->allocated_bytes);
+
 		if (cp_heap->reusable && !cp_heap->allocated_bytes) {
 			if (fmem_set_state(FMEM_T_STATE) != 0)
 				pr_err("%s: unable to transition heap to T-state\n",
@@ -242,6 +246,9 @@ ion_phys_addr_t ion_cp_allocate(struct ion_heap *heap,
 
 		return ION_CP_ALLOCATE_FAIL;
 	}
+
+	printk(KERN_WARNING "heap %s allocated %lx (total allocated_bytes %lx)\n",
+		heap->name, size, cp_heap->allocated_bytes);
 
 	return offset;
 }
