@@ -172,7 +172,9 @@ static DEFINE_MUTEX(bam_rx_pool_mutexlock);
 static int bam_rx_pool_len;
 static LIST_HEAD(bam_tx_pool);
 static DEFINE_SPINLOCK(bam_tx_pool_spinlock);
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 static DEFINE_MUTEX(bam_pdev_mutexlock);
+#endif
 
 struct bam_mux_hdr {
 	uint16_t magic_num;
@@ -482,6 +484,7 @@ static inline void handle_bam_mux_cmd_open(struct bam_mux_hdr *rx_hdr)
 	unsigned long flags;
 	int ret;
 
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 	mutex_lock(&bam_pdev_mutexlock);
 	if (in_global_reset) {
 		bam_dmux_log("%s: open cid %d aborted due to ssr\n",
@@ -490,16 +493,22 @@ static inline void handle_bam_mux_cmd_open(struct bam_mux_hdr *rx_hdr)
 		queue_rx();
 		return;
 	}
+#endif
 	spin_lock_irqsave(&bam_ch[rx_hdr->ch_id].lock, flags);
 	bam_ch[rx_hdr->ch_id].status |= BAM_CH_REMOTE_OPEN;
 	bam_ch[rx_hdr->ch_id].num_tx_pkts = 0;
 	spin_unlock_irqrestore(&bam_ch[rx_hdr->ch_id].lock, flags);
+#ifdef CONFIG_MSM_BAM_DMUX_D2USC
+	queue_rx();
+#endif
 	ret = platform_device_add(bam_ch[rx_hdr->ch_id].pdev);
 	if (ret)
 		pr_err("%s: platform_device_add() error: %d\n",
 				__func__, ret);
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 	mutex_unlock(&bam_pdev_mutexlock);
 	queue_rx();
+#endif
 }
 
 static void handle_bam_mux_cmd(struct work_struct *work)
@@ -573,6 +582,7 @@ static void handle_bam_mux_cmd(struct work_struct *work)
 		/* probably should drop pending write */
 		bam_dmux_log("%s: closing cid %d\n", __func__,
 				rx_hdr->ch_id);
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 		mutex_lock(&bam_pdev_mutexlock);
 		if (in_global_reset) {
 			bam_dmux_log("%s: close cid %d aborted due to ssr\n",
@@ -580,17 +590,25 @@ static void handle_bam_mux_cmd(struct work_struct *work)
 			mutex_unlock(&bam_pdev_mutexlock);
 			break;
 		}
+#endif
 		spin_lock_irqsave(&bam_ch[rx_hdr->ch_id].lock, flags);
 		bam_ch[rx_hdr->ch_id].status &= ~BAM_CH_REMOTE_OPEN;
 		spin_unlock_irqrestore(&bam_ch[rx_hdr->ch_id].lock, flags);
+#ifdef CONFIG_MSM_BAM_DMUX_D2USC
+		queue_rx();
+#endif
 		platform_device_unregister(bam_ch[rx_hdr->ch_id].pdev);
 		bam_ch[rx_hdr->ch_id].pdev =
 			platform_device_alloc(bam_ch[rx_hdr->ch_id].name, 2);
 		if (!bam_ch[rx_hdr->ch_id].pdev)
 			pr_err("%s: platform_device_alloc failed\n", __func__);
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 		mutex_unlock(&bam_pdev_mutexlock);
+#endif
 		dev_kfree_skb_any(rx_skb);
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 		queue_rx();
+#endif
 		break;
 	default:
 		DMUX_LOG_KERR("%s: dropping invalid hdr. magic %x"
@@ -1798,7 +1816,9 @@ static int restart_notifier_cb(struct notifier_block *this,
 	disconnect_ack = 0;
 
 	/* Cleanup Channel States */
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 	mutex_lock(&bam_pdev_mutexlock);
+#endif
 	for (i = 0; i < BAM_DMUX_NUM_CHANNELS; ++i) {
 		temp_remote_status = bam_ch_is_remote_open(i);
 		bam_ch[i].status &= ~BAM_CH_REMOTE_OPEN;
@@ -1811,7 +1831,9 @@ static int restart_notifier_cb(struct notifier_block *this,
 						bam_ch[i].name, 2);
 		}
 	}
+#ifndef CONFIG_MSM_BAM_DMUX_D2USC
 	mutex_unlock(&bam_pdev_mutexlock);
+#endif
 
 	/* Cleanup pending UL data */
 	spin_lock_irqsave(&bam_tx_pool_spinlock, flags);
