@@ -32,6 +32,7 @@ extern int sec_debug_init(void);
 extern int sec_debug_dump_stack(void);
 extern void sec_debug_hw_reset(void);
 extern void sec_peripheral_secure_check_fail(void);
+extern void sec_l1_dcache_check_fail(void);
 extern void sec_debug_check_crash_key(unsigned int code, int value);
 extern void sec_getlog_supply_fbinfo(void *p_fb, u32 res_x, u32 res_y, u32 bpp,
 		u32 frames);
@@ -44,6 +45,7 @@ extern void sec_getlog_supply_kloginfo(void *klog_buf);
 extern void sec_gaf_supply_rqinfo(unsigned short curr_offset,
 				  unsigned short rq_offset);
 extern int sec_debug_is_enabled(void);
+extern int sec_debug_is_enabled_for_ssr(void);
 #else
 static inline int sec_debug_init(void)
 {
@@ -299,7 +301,7 @@ extern void sec_debug_subsys_fill_fbinfo(int idx, void *fb, u32 xres,
   * low word : minor version
   * minor version changes should not affect LK behavior
   */
-#define SEC_DEBUG_SUBSYS_MAGIC3 0x00010002
+#define SEC_DEBUG_SUBSYS_MAGIC3 0x00010003
 
 
 #define TZBSP_CPU_COUNT           2
@@ -422,6 +424,29 @@ struct sec_debug_subsys_sched_log {
 	unsigned int irq_exit_array_cnt;
 };
 
+
+struct __log_struct_info {
+	unsigned int buffer_offset;
+	unsigned int w_off_offset;
+	unsigned int head_offset;
+	unsigned int size_offset;
+	unsigned int size_t_typesize;
+};
+
+struct __log_data {
+	unsigned int log_paddr;
+	unsigned int buffer_paddr;
+};
+
+struct sec_debug_subsys_logger_log_info {
+	struct __log_struct_info stinfo;
+	struct __log_data main;
+	struct __log_data system;
+	struct __log_data events;
+	struct __log_data radio;
+};
+
+
 struct sec_debug_subsys_data {
 	char name[16];
 	char state[16];
@@ -448,6 +473,7 @@ struct sec_debug_subsys_data_krait {
 	struct tzbsp_dump_buf_s **tz_core_dump;
 	struct sec_debug_subsys_fb fb_info;
 	struct sec_debug_subsys_sched_log sched_log;
+	struct sec_debug_subsys_logger_log_info logger_log;
 };
 
 struct sec_debug_subsys_private {
@@ -467,6 +493,7 @@ struct sec_debug_subsys {
 	struct sec_debug_subsys_private priv;
 };
 
+extern void print_modem_dump_info(void);
 extern int sec_debug_subsys_add_var_mon(char *name, unsigned int size,
 	unsigned int addr);
 #define SEC_DEBUG_SUBSYS_ADD_VAR_TO_MONITOR(var) \
@@ -489,9 +516,10 @@ extern unsigned int get_wdog_regsave_paddr(void);
 extern unsigned int get_last_pet_paddr(void);
 extern void sec_debug_subsys_set_kloginfo(unsigned int *idx_paddr,
 	unsigned int *log_paddr, unsigned int *size);
+extern int sec_debug_subsys_set_logger_info(
+	struct sec_debug_subsys_logger_log_info *log_info);
 int sec_debug_save_die_info(const char *str, struct pt_regs *regs);
 int sec_debug_save_panic_info(const char *str, unsigned int caller);
-
 extern void sec_debug_set_qc_dload_magic(int on);
 extern uint32_t global_pvs;
 #endif

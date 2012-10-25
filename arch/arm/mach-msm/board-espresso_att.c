@@ -2697,6 +2697,9 @@ static int msm_hsusb_otg_en(bool on)
 
 	pr_info("%s, enable %d\n", __func__, on);
 
+	if (enable)
+		msm_otg_set_id_state(enable);
+
 	gpio_set_value_cansleep(
 		PM8921_GPIO_PM_TO_SYS(PMIC_GPIO_OTG_EN), enable);
 	return 0;
@@ -3921,6 +3924,7 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 		false,
 		9000, 51, 1130300, 9000,
 	},
+
 	{
 		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
 		MSM_RPMRS_LIMITS(ON, HSFS_OPEN, ACTIVE, RET_HIGH),

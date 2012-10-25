@@ -90,7 +90,7 @@ struct pm8xxx_mpp_init {
 
 /* Initial PM8921 GPIO configurations */
 static struct pm8xxx_gpio_init pm8921_gpios[] __initdata = {
-#ifndef CONFIG_MACH_M2_DCM
+#if !defined(CONFIG_MACH_M2_DCM) && !defined(CONFIG_MACH_K2_KDI)
 	PM8XXX_GPIO_INPUT(16,	    PM_GPIO_PULL_UP_30), /* SD_CARD_WP */
     /* External regulator shared by display and touchscreen on LiQUID */
 	PM8XXX_GPIO_OUTPUT_VIN(21, 1, PM_GPIO_VIN_VPH),	 /* Backlight Enable */
@@ -583,46 +583,46 @@ static struct led_platform_data pm8921_led_core_pdata = {
 };
 
 
-static int pm8921_led0_pat1_red_pwm_duty_pcts[] = {
+int pm8921_led0_pat1_red_pwm_duty_pcts[] = {
 	100, 100
 };
-static int pm8921_led0_pat1_green_pwm_duty_pcts[] = {
+int pm8921_led0_pat1_green_pwm_duty_pcts[] = {
 	0, 0
 };
 
-static int pm8921_led0_pat2_red_pwm_duty_pcts[] = {
+int pm8921_led0_pat2_red_pwm_duty_pcts[] = {
 	0, 100
 };
-static int pm8921_led0_pat2_green_pwm_duty_pcts[] = {
+int pm8921_led0_pat2_green_pwm_duty_pcts[] = {
 	0, 0
 };
 
-static int pm8921_led0_pat3_red_pwm_duty_pcts[] = {
+int pm8921_led0_pat3_red_pwm_duty_pcts[] = {
 	0, 0
 };
 
-static int pm8921_led0_pat3_green_pwm_duty_pcts[] = {
+int pm8921_led0_pat3_green_pwm_duty_pcts[] = {
 	0, 0
 };
 
-static int pm8921_led0_pat3_blue_pwm_duty_pcts[] = {
+int pm8921_led0_pat3_blue_pwm_duty_pcts[] = {
 	0, 100
 };
 
-static int pm8921_led0_pat4_red_pwm_duty_pcts[] = {
+int pm8921_led0_pat4_red_pwm_duty_pcts[] = {
 	0, 100
 };
-static int pm8921_led0_pat4_green_pwm_duty_pcts[] = {
+int pm8921_led0_pat4_green_pwm_duty_pcts[] = {
 	0, 0
 };
 
-static int pm8921_led0_pat5_red_pwm_duty_pcts[] = {
+int pm8921_led0_pat5_red_pwm_duty_pcts[] = {
 	0, 0
 };
-static int pm8921_led0_pat5_green_pwm_duty_pcts[] = {
+int pm8921_led0_pat5_green_pwm_duty_pcts[] = {
 	100, 100
 };
-static int pm8921_led0_pat5_blue_pwm_duty_pcts[] = {
+int pm8921_led0_pat5_blue_pwm_duty_pcts[] = {
 	0, 0
 };
 
@@ -1003,6 +1003,9 @@ static void msm8921_sec_charger_init(void)
 	} else if (machine_is_M2_DCM() && system_rev >= 0x00) {
 		pm8921_chg_pdata.batt_id_min = 860000;
 		pm8921_chg_pdata.batt_id_max = 960000;
+	} else if (machine_is_K2_KDI() && system_rev >= 0x00) {
+		pm8921_chg_pdata.batt_id_min = 860000;
+		pm8921_chg_pdata.batt_id_max = 960000;
 	} else if (machine_is_jaguar() && system_rev >= 0x04) {
 		pm8921_chg_pdata.batt_id_min = 860000;
 		pm8921_chg_pdata.batt_id_max = 960000;
@@ -1022,6 +1025,7 @@ static void msm8921_sec_charger_init(void)
 		(machine_is_M2_VZW() && system_rev >= 0x06) ||
 		(machine_is_jaguar() && system_rev >= 0x0A) ||
 		(machine_is_M2_DCM() && system_rev >= 0x00) ||
+		(machine_is_K2_KDI() && system_rev >= 0x00) ||
 		machine_is_JASPER())
 		pm8921_chg_pdata.max_voltage = 4350;
 }
@@ -1030,7 +1034,10 @@ void __init msm8960_init_pmic(void)
 {
 	msm8921_sec_charger_init();
 
+#if !defined(CONFIG_MACH_AEGIS2) && !defined(CONFIG_MACH_JASPER)\
+	&& !defined(CONFIG_MACH_M2_VZW)
 	pmic_reset_irq = PM8921_IRQ_BASE + PM8921_RESOUT_IRQ;
+#endif
 	msm8960_device_ssbi_pmic.dev.platform_data =
 				&msm8960_ssbi_pm8921_pdata;
 	pm8921_platform_data.num_regulators = msm_pm8921_regulator_pdata_len;

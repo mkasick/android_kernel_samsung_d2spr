@@ -75,6 +75,8 @@ struct s5c73m3_ctrl {
 	int isCapture;
 	int flash_mode;
 	int hdr_mode;
+	int low_light_mode;
+	int low_light_mode_size;
 	int jpeg_size;
 	int preview_size;
 	int preview_size_width;
@@ -730,11 +732,29 @@ static int s5c73m3_s_stream_preview(int enable, int rt)
 			CAM_DBG_M("Camera Interleaved Preview\n");
 
 			if (s5c73m3_ctrl->hdr_mode == 1) {
-				CAM_DBG_H("Set HDR\n");
+				CAM_DBG_H("Start HDR\n");
 				err = s5c73m3_i2c_write_block(
 					S5C73M3_HDR,
 					sizeof(S5C73M3_HDR)/
 					sizeof(S5C73M3_HDR[0])
+							      );
+				if (err < 0) {
+					cam_err("failed s5c73m3_write_block!!\n");
+					return -EIO;
+				}
+
+				/* check whether ISP can be used */
+				err = s5c73m3_wait_ISP_status();
+				if (err < 0) {
+					cam_err("failed s5c73m3_wait_ISP_status\n");
+					return -EIO;
+				}
+			} else if (s5c73m3_ctrl->low_light_mode_size == 1) {
+				CAM_DBG_H("Start Low Light Shot\n");
+				err = s5c73m3_i2c_write_block(
+					S5C73M3_LLS,
+					sizeof(S5C73M3_LLS)/
+					sizeof(S5C73M3_LLS[0])
 							      );
 				if (err < 0) {
 					cam_err("failed s5c73m3_write_block!!\n");
@@ -1911,6 +1931,35 @@ static int s5c73m3_start_HDR(int val)
 	return err;
 }
 
+static int s5c73m3_set_low_light(int val)
+{
+	int err = 0;
+	CAM_DBG_H("E, value %d\n", val);
+
+	s5c73m3_ctrl->low_light_mode = val;
+
+	if (s5c73m3_ctrl->low_light_mode) {
+		CAM_DBG_H("LLS mode : 0N\n");
+		err = s5c73m3_writeb(S5C73M3_LLS_MODE,
+				     S5C73M3_LLS_MODE_ON);
+		CHECK_ERR(err);
+	} else {
+		CAM_DBG_H("LLS mode : OFF\n");
+		err = s5c73m3_writeb(S5C73M3_LLS_MODE,
+				     S5C73M3_LLS_MODE_OFF);
+		CHECK_ERR(err);
+	}
+	/* check whether ISP can be used */
+	err = s5c73m3_wait_ISP_status();
+	if (err < 0) {
+		cam_err("failed s5c73m3_wait_ISP_status\n");
+		return -EIO;
+	}
+
+	CAM_DBG_H("X\n");
+	return err;
+}
+
 static int s5c73m3_set_antishake(int val)
 {
 	CAM_DBG_H("Entered, %d\n", val);
@@ -2713,11 +2762,8 @@ static int s5c73m3_get_sensor_fw_version(void)
 		CHECK_ERR(err);
 	}
 
-	if (s5c73m3_ctrl->sensor_fw[0] == 'Z' ||
-		s5c73m3_ctrl->sensor_fw[0] == 'G' ||
-		s5c73m3_ctrl->sensor_fw[0] == 'S' ||
-		s5c73m3_ctrl->sensor_fw[0] == 'O') {
-
+	if ((s5c73m3_ctrl->sensor_fw[0] >= 'A')
+		&& s5c73m3_ctrl->sensor_fw[0] <= 'Z') {
 		cam_err("sensor_fw = %s\n",
 			s5c73m3_ctrl->sensor_fw);
 		return 0;
@@ -3107,10 +3153,8 @@ static int s5c73m3_check_fw(const struct msm_camera_sensor_info *data,
 		else
 			CAM_DBG_M("Loading From PhoneFW......\n");
 
-		if (s5c73m3_ctrl->phone_fw[0] == 'Z' ||
-			s5c73m3_ctrl->phone_fw[0] == 'G' ||
-			s5c73m3_ctrl->phone_fw[0] == 'S' ||
-			s5c73m3_ctrl->phone_fw[0] == 'O') {
+		if ((s5c73m3_ctrl->phone_fw[0] >= 'A')
+			&& s5c73m3_ctrl->phone_fw[0] <= 'Z') {
 			s5c73m3_reset_module(false);
 			err = s5c73m3_SPI_booting();
 			if (err < 0) {
@@ -3174,10 +3218,8 @@ static int s5c73m3_check_fw(const struct msm_camera_sensor_info *data,
 	data->sensor_platform_info->sensor_get_fw(&s5c73m3_ctrl->sensor_fw,
 		&s5c73m3_ctrl->phone_fw);
 
-	if (s5c73m3_ctrl->phone_fw[0] == 'Z' ||
-		s5c73m3_ctrl->phone_fw[0] == 'G' ||
-		s5c73m3_ctrl->phone_fw[0] == 'S' ||
-		s5c73m3_ctrl->phone_fw[0] == 'O') {
+	if ((s5c73m3_ctrl->phone_fw[0] >= 'A')
+		&& s5c73m3_ctrl->phone_fw[0] <= 'Z') {
 		s5c73m3_sensor_reset();
 
 		err = s5c73m3_SPI_booting();
@@ -3282,8 +3324,13 @@ static int s5c73m3_read_vdd_core(void)
 		s5c73m3_ctrl->sensordata->sensor_platform_info
 		->sensor_set_isp_core(1000000);
 	else
+#if defined(CONFIG_MACH_M2_DCM)
+		s5c73m3_ctrl->sensordata->sensor_platform_info
+		->sensor_set_isp_core(1230000);
+#else
 		s5c73m3_ctrl->sensordata->sensor_platform_info
 		->sensor_set_isp_core(1150000);
+#endif
 
 	CAM_DBG_H("X\n");
 
@@ -3373,6 +3420,7 @@ int s5c73m3_sensor_init(const struct msm_camera_sensor_info *data)
 
 	s5c73m3_ctrl->i2c_write_check = 0;
 	s5c73m3_ctrl->fps = 0;
+	s5c73m3_ctrl->low_light_mode_size = 0;
 
 	config_csi2 = 0;
 	rc = s5c73m3_sensor_init_probe(data);
@@ -3453,6 +3501,14 @@ void sensor_native_control(void __user *arg)
 
 	case EXT_CAM_START_HDR:
 		s5c73m3_start_HDR(ctrl_info.value_1);
+		break;
+
+	case EXT_CAM_SET_LOW_LIGHT_MODE:
+		s5c73m3_set_low_light(ctrl_info.value_1);
+		break;
+
+	case EXT_CAM_SET_LOW_LIGHT_SIZE:
+		s5c73m3_ctrl->low_light_mode_size = ctrl_info.value_1;
 		break;
 
 	case EXT_CAM_SET_ANTI_SHAKE:
