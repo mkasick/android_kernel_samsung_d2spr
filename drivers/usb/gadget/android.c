@@ -900,7 +900,7 @@ static int mass_storage_function_init(struct android_usb_function *f,
 								GFP_KERNEL);
 	if (!config)
 		return -ENOMEM;
-
+#define CONFIG_USB_MASS_STORAGE_LUN_NUMBER_2
 #ifdef CONFIG_USB_MASS_STORAGE_LUN_NUMBER_2
 	config->fsg.nluns = 2;
 #else
