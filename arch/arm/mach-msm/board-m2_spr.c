@@ -176,12 +176,6 @@
 #include <asm/kexec.h>
 #endif
 
-#ifdef CONFIG_FB_MSM_HDMI_AS_PRIMARY
-static unsigned char hdmi_is_primary = 1;
-#else
-static unsigned char hdmi_is_primary;
-#endif
-
 #ifdef CONFIG_TOUCHSCREEN_MMS144
 struct tsp_callbacks *charger_callbacks;
 struct tsp_callbacks {
@@ -324,7 +318,6 @@ static struct msm_gpiomux_config msm8960_sec_ts_configs[] = {
 		},
 	},
 };
-
 
 #define MSM_PMEM_ADSP_SIZE                 0x9600000
 #define MSM_PMEM_ADSP_SIZE_FOR_2GB         0x9600000
@@ -524,7 +517,7 @@ static void __init size_pmem_devices(void)
 	if (!pmem_param_set) {
 		if (machine_is_msm8960_liquid())
 			pmem_size = MSM_LIQUID_PMEM_SIZE;
-		if (hdmi_is_primary)
+		if (msm8960_hdmi_as_primary_selected())
 			pmem_size = MSM_HDMI_PRIM_PMEM_SIZE;
 	}
 
@@ -696,10 +689,11 @@ static void __init adjust_mem_for_liquid(void)
 		if (machine_is_msm8960_liquid())
 			msm_ion_sf_size = MSM_LIQUID_ION_SF_SIZE;
 
-		if (hdmi_is_primary)
+		if (msm8960_hdmi_as_primary_selected())
 			msm_ion_sf_size = MSM_HDMI_PRIM_ION_SF_SIZE;
 
-		if (machine_is_msm8960_liquid() || hdmi_is_primary) {
+		if (machine_is_msm8960_liquid() ||
+			msm8960_hdmi_as_primary_selected()) {
 		for (i = 0; i < ion_pdata.nr; i++) {
 					if (ion_pdata.heaps[i].id == ION_SF_HEAP_ID) {
 						ion_pdata.heaps[i].size =
@@ -710,7 +704,7 @@ static void __init adjust_mem_for_liquid(void)
 			}
 		}
 	}
-}
+	}
 }
 
 static void __init reserve_mem_for_ion(enum ion_memory_types mem_type,
@@ -791,10 +785,10 @@ static void __init reserve_ion_memory(void)
 	for (i = 0; i < ion_pdata.nr; ++i) {
 		struct ion_platform_heap *heap = &(ion_pdata.heaps[i]);
 
-        int align = SZ_4K;
-        int iommu_map_all = 0;
-        int adjacent_mem_id = INVALID_HEAP_ID;
-       
+		int align = SZ_4K;
+		int iommu_map_all = 0;
+		int adjacent_mem_id = INVALID_HEAP_ID;
+
 		if (heap->extra_data) {
 			int fixed_position = NOT_FIXED;
 			int mem_is_fmem = 0;
@@ -1221,7 +1215,6 @@ static struct platform_device touchkey_i2c_gpio_device = {
 
 #ifdef CONFIG_USB_SWITCH_FSA9485
 static enum cable_type_t set_cable_status;
-
 #ifdef CONFIG_MHL_NEW_CBUS_MSC_CMD
 static void fsa9485_mhl_cb(bool attached, int mhl_charge)
 {
@@ -1317,7 +1310,6 @@ static void fsa9485_mhl_cb(bool attached)
 			__func__, ret);
 	}
 }
-
 #endif
 static void fsa9485_otg_cb(bool attached)
 {
@@ -1491,6 +1483,13 @@ static void fsa9485_usb_cdp_cb(bool attached)
 	set_cable_status =
 		attached ? CABLE_TYPE_CDP : CABLE_TYPE_NONE;
 
+	if (system_rev >= 0x3) {
+		if (attached) {
+			pr_info("%s set vbus state\n", __func__);
+			msm_otg_set_vbus_state(attached);
+		}
+	}
+
 	for (i = 0; i < 10; i++) {
 		psy = power_supply_get_by_name("battery");
 		if (psy)
@@ -1564,6 +1563,13 @@ static void fsa9485_smartdock_cb(bool attached)
 	msm_otg_set_smartdock_state(attached);
 }
 
+static void fsa9485_audio_dock_cb(bool attached)
+{
+	pr_info("fsa9485_audio_dock_cb attached %d\n", attached);
+
+	msm_otg_set_smartdock_state(attached);
+}
+
 static int fsa9485_dock_init(void)
 {
 	int ret;
@@ -1594,6 +1600,7 @@ int msm8960_get_cable_type(void)
 		return;
 	}
 #endif
+
 	pr_info("cable type (%d) -----\n", set_cable_status);
 
 	if (set_cable_status != CABLE_TYPE_NONE) {
@@ -1651,6 +1658,7 @@ static struct fsa9485_platform_data fsa9485_pdata = {
 	.dock_init = fsa9485_dock_init,
 	.usb_cdp_cb = fsa9485_usb_cdp_cb,
 	.smartdock_cb = fsa9485_smartdock_cb,
+	.audio_dock_cb = fsa9485_audio_dock_cb,
 };
 
 static struct i2c_board_info micro_usb_i2c_devices_info[] __initdata = {
@@ -1745,6 +1753,7 @@ static void sii9234_hw_onoff(bool onoff)
 		if (gpio_direction_output(GPIO_MHL_RST, 0))
 			pr_err("%s error in making GPIO_MHL_RST Low\n"
 			, __func__);
+
 		gpio_tlmm_config(GPIO_CFG(GPIO_MHL_EN, 0, GPIO_CFG_OUTPUT,
 			GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), 1);
 	}
@@ -1754,7 +1763,6 @@ static void sii9234_hw_onoff(bool onoff)
 
 static void sii9234_hw_reset(void)
 {
-
 	usleep_range(10000, 20000);
 	if (gpio_direction_output(GPIO_MHL_RST, 1))
 		printk(KERN_ERR "%s error in making GPIO_MHL_RST HIGH\n",
@@ -1863,6 +1871,7 @@ static int is_smb347_inok_using(void)
 
 	return 0;
 }
+
 #ifdef CONFIG_WIRELESS_CHARGING
 static void smb347_wireless_cb(void)
 {
@@ -1941,6 +1950,7 @@ static struct smb347_platform_data smb347_pdata = {
 #ifdef CONFIG_WIRELESS_CHARGING
 	.smb347_wpc_cb = smb347_wireless_cb,
 #endif
+	.smb347_get_cable = msm8960_get_cable_type,
 };
 #endif /* CONFIG_CHARGER_SMB347 */
 
@@ -2318,6 +2328,7 @@ static void mpl_init(void)
 		pr_err("%s gpio request %d err\n", __func__, GPIO_MPU3050_INT);
 	else
 		gpio_direction_input(GPIO_MPU3050_INT);
+
 #if defined(CONFIG_MPU_SENSORS_MPU6050B1)
 	if (system_rev == BOARD_REV01)
 		mpu_data = mpu_data_01;
@@ -3998,7 +4009,6 @@ static struct msm_pm_sleep_status_data msm_pm_slp_sts_data = {
 	.mask = 1UL << 13,
 };
 
-
 static struct platform_device msm_device_saw_core0 = {
 	.name          = "saw-regulator",
 	.id            = 0,
@@ -4557,6 +4567,13 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 
 	{
 		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
+		MSM_RPMRS_LIMITS(ON, GDHS, MAX, ACTIVE),
+		false,
+		8500, 51, 1122000, 8500,
+	},
+
+	{
+		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
 		MSM_RPMRS_LIMITS(ON, HSFS_OPEN, MAX, ACTIVE),
 		false,
 		9000, 51, 1130300, 9000,
@@ -4566,6 +4583,13 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 		MSM_RPMRS_LIMITS(ON, HSFS_OPEN, ACTIVE, RET_HIGH),
 		false,
 		10000, 51, 1130300, 10000,
+	},
+
+	{
+		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
+		MSM_RPMRS_LIMITS(OFF, GDHS, MAX, ACTIVE),
+		false,
+		12000, 14, 2205900, 12000,
 	},
 
 	{
@@ -5155,6 +5179,7 @@ static int configure_codec_lineout_gpio()
 					gpio_rev(LINEOUT_EN)), 1);
 	return 0;
 }
+
 static int tabla_codec_ldo_en_init()
 {
 	int ret;
@@ -5312,6 +5337,7 @@ static void __init samsung_m2_spr_init(void)
 
 	if (PLATFORM_IS_CHARM25())
 		platform_add_devices(mdm_devices, ARRAY_SIZE(mdm_devices));
+
 }
 
 MACHINE_START(M2_SPR, "SAMSUNG M2_SPR")

@@ -499,9 +499,8 @@ static u32 ddl_set_enc_property(struct ddl_client_context *ddl,
 				"Fails_as_not_in_open_state");
 		return VCD_ERR_ILLEGAL_OP;
 	}
-	} else {
+	} else
 		return vcd_status;
-	}
 
 	switch (property_hdr->prop_id) {
 	case VCD_I_FRAME_SIZE:

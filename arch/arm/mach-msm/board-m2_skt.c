@@ -325,7 +325,7 @@ static struct msm_gpiomux_config msm8960_sec_ts_configs[] = {
 #define MSM_ION_SF_SIZE_FOR_2GB		0x6400000 /* 100MB */
 #define MSM_ION_MM_FW_SIZE	0x200000 /* (2MB) */
 #define MSM_ION_MM_SIZE		MSM_PMEM_ADSP_SIZE
-#define MSM_ION_QSECOM_SIZE	0x600000 /* (6MB) */
+#define MSM_ION_QSECOM_SIZE	0x1700000 /* (24MB) */
 #define MSM_ION_MFC_SIZE	SZ_8K
 #define MSM_ION_AUDIO_SIZE	0x1000 /* 4KB */
 #define MSM_ION_HEAP_NUM	8
@@ -933,8 +933,10 @@ static void __init locate_unstable_memory(void)
 	high = mb->start + mb->size;
 
 	/* Check if 32 bit overflow occured */
-	if (high < mb->start)
+	if (high < mb->start) {
 		high = ~0UL;
+		mb->size -= 1 << 12;
+	}
 
 	low &= ~(bank_size - 1);
 
@@ -991,8 +993,12 @@ static int __init ext_display_setup(char *param)
 }
 early_param("ext_display", ext_display_setup);
 
+unsigned int address = 0xea000000;
+unsigned int size = 0x100000;
+
 static void __init msm8960_reserve(void)
 {
+	int ret;
 	msm8960_set_display_params(prim_panel_name, ext_panel_name);
 	msm_reserve();
 	if (fmem_pdata.size) {
@@ -1006,6 +1012,11 @@ static void __init msm8960_reserve(void)
 #else
 	fmem_pdata.phys = reserve_memory_for_fmem(fmem_pdata.size);
 #endif
+	}
+	if (system_rev >= 12) {
+		pr_err("Reserving mem at addr %x size: %x\n", address, size);
+		ret = memblock_remove(address, size);
+		BUG_ON(ret);
 	}
 }
 
@@ -1321,6 +1332,13 @@ static void fsa9485_usb_cdp_cb(bool attached)
 
 	set_cable_status =
 		attached ? CABLE_TYPE_CDP : CABLE_TYPE_NONE;
+
+	if (system_rev >= 0x4) {
+		if (attached) {
+			pr_info("%s set vbus state\n", __func__);
+			msm_otg_set_vbus_state(attached);
+		}
+	}
 
 	for (i = 0; i < 10; i++) {
 		psy = power_supply_get_by_name("battery");
@@ -1751,6 +1769,7 @@ static struct smb347_platform_data smb347_pdata = {
 	.smb347_using = is_smb347_using,
 	.inok = GPIO_INOK_INT,
 	.smb347_inok_using = is_smb347_inok_using,
+	.smb347_get_cable = msm8960_get_cable_type,
 };
 #endif /* CONFIG_CHARGER_SMB347 */
 
@@ -4549,6 +4568,7 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 		false,
 		9000, 51, 1130300, 9000,
 	},
+
 	{
 		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
 		MSM_RPMRS_LIMITS(ON, HSFS_OPEN, ACTIVE, RET_HIGH),

@@ -46,6 +46,8 @@
 #define SW_RESET_PLL BIT(0)
 #define PWRDN_B BIT(7)
 
+void mipi_dsi_phy_rdy_poll(void);
+
 /* multimedia sub system clock control */
 char *mmss_cc_base = MSM_MMSS_CLK_CTL_BASE;
 /* multimedia sub system sfpb */
@@ -669,6 +671,7 @@ void mipi_dsi_clk_enable(void)
 	if (clk_set_rate(dsi_esc_clk, esc_byte_ratio) < 0) /* divided by esc */
 		pr_err("%s: dsi_esc_clk - "			 /* clk ratio */
 			"clk_set_rate failed\n", __func__);
+
 	mipi_dsi_pclk_ctrl(&dsi_pclk, 1);
 	mipi_dsi_clk_ctrl(&dsicore_clk, 1);
 	clk_enable(dsi_byte_div_clk);
@@ -752,7 +755,6 @@ void hdmi_phy_reset(void)
 
 void hdmi_msm_reset_core(void)
 {
-	hdmi_msm_set_mode(FALSE);
 	hdmi_msm_clk(0);
 	udelay(5);
 	hdmi_msm_clk(1);

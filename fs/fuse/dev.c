@@ -247,20 +247,23 @@ static inline int is_rt(struct fuse_conn *fc)
 	/* FUSE_HANDLE_RT_CLASS bit is set by 'handle_rt_class' */
 	/* mount option while mounting a file system.           */
 	struct io_context *ioc;
+	int ret = 0;
 
 	if (!fc)
 		return 0;
-
 	if (!(fc->flags & FUSE_HANDLE_RT_CLASS)) /* Don't handle RT class */
 		return 0;
 
 	ioc = get_io_context(GFP_NOWAIT, 0);
-	if (ioc && IOPRIO_PRIO_CLASS(ioc->ioprio) == IOPRIO_CLASS_RT)
-		return 1;
-
+	if (!ioc)
 	return 0;
-}
 
+	if (IOPRIO_PRIO_CLASS(ioc->ioprio) == IOPRIO_CLASS_RT)
+		ret = 1;
+
+	put_io_context(ioc);
+	return ret;
+}
 
 static void queue_request(struct fuse_conn *fc, struct fuse_req *req)
 {

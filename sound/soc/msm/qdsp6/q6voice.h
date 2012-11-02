@@ -935,6 +935,7 @@ struct voice_data {
 
 	struct voice_dha_data sec_dha_data;
 };
+
 struct cal_mem {
 	struct ion_handle *handle;
 	uint32_t phy;

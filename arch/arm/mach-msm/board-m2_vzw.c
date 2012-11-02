@@ -183,12 +183,6 @@ struct tsp_callbacks {
 };
 #endif
 
-#ifdef CONFIG_FB_MSM_HDMI_AS_PRIMARY
-static unsigned char hdmi_is_primary = 1;
-#else
-static unsigned char hdmi_is_primary;
-#endif
-
 static struct platform_device msm_fm_platform_init = {
 	.name = "iris_fm",
 	.id   = -1,
@@ -346,7 +340,6 @@ static struct msm_gpiomux_config msm8960_sec_ts_configs[] = {
 		},
 	},
 };
-
 
 #define MSM_PMEM_ADSP_SIZE                 0x9600000
 #define MSM_PMEM_ADSP_SIZE_FOR_2GB         0x9600000
@@ -546,7 +539,7 @@ static void __init size_pmem_devices(void)
 	if (!pmem_param_set) {
 		if (machine_is_msm8960_liquid())
 			pmem_size = MSM_LIQUID_PMEM_SIZE;
-		if (hdmi_is_primary)
+		if (msm8960_hdmi_as_primary_selected())
 			pmem_size = MSM_HDMI_PRIM_PMEM_SIZE;
 	}
 
@@ -588,7 +581,7 @@ static int msm8960_paddr_to_memtype(unsigned int paddr)
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 static struct ion_cp_heap_pdata cp_mm_ion_pdata = {
 	.permission_type = IPT_TYPE_MM_CARVEOUT,
-	.align = PAGE_SIZE,
+	.align = SZ_64K,
 	.reusable = FMEM_ENABLED,
 	.mem_is_fmem = FMEM_ENABLED,
 	.fixed_position = FIXED_MIDDLE,
@@ -718,10 +711,11 @@ static void __init adjust_mem_for_liquid(void)
 		if (machine_is_msm8960_liquid())
 			msm_ion_sf_size = MSM_LIQUID_ION_SF_SIZE;
 
-		if (hdmi_is_primary)
+		if (msm8960_hdmi_as_primary_selected())
 			msm_ion_sf_size = MSM_HDMI_PRIM_ION_SF_SIZE;
 
-		if (machine_is_msm8960_liquid() || hdmi_is_primary) {
+		if (machine_is_msm8960_liquid() ||
+			msm8960_hdmi_as_primary_selected()) {
 			for (i = 0; i < ion_pdata.nr; i++) {
 				if (ion_pdata.heaps[i].id == ION_SF_HEAP_ID) {
 					ion_pdata.heaps[i].size =
@@ -732,7 +726,7 @@ static void __init adjust_mem_for_liquid(void)
 			}
 		}
 	}
-}
+	}
 }
 
 static void __init reserve_mem_for_ion(enum ion_memory_types mem_type,
@@ -1415,6 +1409,7 @@ static void fsa9485_charger_cb(bool attached)
 		pr_err("%s: fail to get battery ps\n", __func__);
 		return;
 	}
+
 #ifdef CONFIG_TOUCHSCREEN_MMS144
 	if (charger_callbacks && charger_callbacks->inform_charger)
 		charger_callbacks->inform_charger(charger_callbacks, attached);
@@ -1510,6 +1505,13 @@ static void fsa9485_usb_cdp_cb(bool attached)
 	set_cable_status =
 		attached ? CABLE_TYPE_CDP : CABLE_TYPE_NONE;
 
+	if (system_rev >= 0x9) {
+		if (attached) {
+			pr_info("%s set vbus state\n", __func__);
+			msm_otg_set_vbus_state(attached);
+		}
+	}
+
 	for (i = 0; i < 10; i++) {
 		psy = power_supply_get_by_name("battery");
 		if (psy)
@@ -1583,6 +1585,13 @@ static void fsa9485_smartdock_cb(bool attached)
 	msm_otg_set_smartdock_state(attached);
 }
 
+static void fsa9485_audio_dock_cb(bool attached)
+{
+	pr_info("fsa9485_audio_dock_cb attached %d\n", attached);
+
+	msm_otg_set_smartdock_state(attached);
+}
+
 static int fsa9485_dock_init(void)
 {
 	int ret;
@@ -1614,7 +1623,7 @@ int msm8960_get_cable_type(void)
 	}
 #endif
 
-	pr_info("[battery] cable type (%d)\n", set_cable_status);
+	pr_info("cable type (%d) -----\n", set_cable_status);
 
 	if (set_cable_status != CABLE_TYPE_NONE) {
 		switch (set_cable_status) {
@@ -1671,6 +1680,7 @@ static struct fsa9485_platform_data fsa9485_pdata = {
 	.dock_init = fsa9485_dock_init,
 	.usb_cdp_cb = fsa9485_usb_cdp_cb,
 	.smartdock_cb = fsa9485_smartdock_cb,
+	.audio_dock_cb = fsa9485_audio_dock_cb,
 };
 
 static struct i2c_board_info micro_usb_i2c_devices_info[] __initdata = {
@@ -1781,7 +1791,6 @@ static void sii9234_hw_onoff(bool onoff)
 
 static void sii9234_hw_reset(void)
 {
-
 	usleep_range(10000, 20000);
 	if (gpio_direction_output(GPIO_MHL_RST, 1))
 		printk(KERN_ERR "%s error in making GPIO_MHL_RST HIGH\n",
@@ -1856,12 +1865,17 @@ static struct sec_bat_platform_data sec_bat_pdata = {
 	.max_voltage = 4350 * 1000,
 	.recharge_voltage = 4280 * 1000,
 	.event_block = 600,
+#if defined(_d2usc_)
+	.high_block = 600,
+	.lpm_high_block = 600,
+#else
 	.high_block = 510,
+	.lpm_high_block = 470,
+#endif
 	.high_recovery = 440,
 	.high_recovery_wpc = 490,
 	.low_block = -50,
 	.low_recovery = -10,
-	.lpm_high_block = 470,
 	.lpm_high_recovery = 440,
 	.lpm_low_block = -40,
 	.lpm_low_recovery = -10,
@@ -1879,7 +1893,6 @@ static void check_highblock_temp(void)
 	if (system_rev < 0xd)
 		sec_bat_pdata.high_block = 600;
 }
-
 #endif /* CONFIG_BATTERY_SEC */
 
 static int is_smb347_using(void)
@@ -1908,14 +1921,12 @@ static void smb347_wireless_cb(void)
 
 void smb347_hw_init(void)
 {
-
 	struct pm_gpio batt_int_param = {
 		.direction	= PM_GPIO_DIR_IN,
 		.pull		= PM_GPIO_PULL_NO,
 		.vin_sel	= PM_GPIO_VIN_S4,
 		.function	= PM_GPIO_FUNC_NORMAL,
 	};
-
 	int rc = 0;
 
 	gpio_tlmm_config(GPIO_CFG(GPIO_INOK_INT,  0, GPIO_CFG_INPUT,
@@ -1944,7 +1955,6 @@ void smb347_hw_init(void)
 			"batt_int");
 		gpio_direction_input(PM8921_GPIO_PM_TO_SYS(PMIC_GPIO_BATT_INT));
 	}
-
 	pr_debug("%s : share gpioi2c with max17048\n", __func__);
 }
 
@@ -1980,6 +1990,7 @@ static struct smb347_platform_data smb347_pdata = {
 #ifdef CONFIG_WIRELESS_CHARGING
 	.smb347_wpc_cb = smb347_wireless_cb,
 #endif
+	.smb347_get_cable = msm8960_get_cable_type,
 };
 #endif /* CONFIG_CHARGER_SMB347 */
 
@@ -3362,7 +3373,7 @@ static void msm_hsusb_vbus_power(bool on)
 
 static int phy_settings[] = {
 	0x44, 0x80,
-	0x3F, 0x81,
+	0x6F, 0x81,
 	0x3C, 0x82,
 	0x13, 0x83,
 	-1,
@@ -4558,7 +4569,7 @@ static struct msm_cpuidle_state msm_cstates[] __initdata = {
 	{0, 0, "C0", "WFI",
 		MSM_PM_SLEEP_MODE_WAIT_FOR_INTERRUPT},
 
-	{0, 2, "C2", "POWER_COLLAPSE",
+	{0, 1, "C2", "POWER_COLLAPSE",
 		MSM_PM_SLEEP_MODE_POWER_COLLAPSE},
 
 	{1, 0, "C0", "WFI",
@@ -4605,6 +4616,13 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 
 	{
 		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
+		MSM_RPMRS_LIMITS(ON, GDHS, MAX, ACTIVE),
+		false,
+		8500, 51, 1122000, 8500,
+	},
+
+	{
+		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
 		MSM_RPMRS_LIMITS(ON, HSFS_OPEN, MAX, ACTIVE),
 		false,
 		9000, 51, 1130300, 9000,
@@ -4614,6 +4632,13 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 		MSM_RPMRS_LIMITS(ON, HSFS_OPEN, ACTIVE, RET_HIGH),
 		false,
 		10000, 51, 1130300, 10000,
+	},
+
+	{
+		MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
+		MSM_RPMRS_LIMITS(OFF, GDHS, MAX, ACTIVE),
+		false,
+		12000, 14, 2205900, 12000,
 	},
 
 	{

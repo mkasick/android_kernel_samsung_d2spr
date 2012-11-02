@@ -387,6 +387,10 @@ static ssize_t mdp_stat_read(
 	dlen -= len;
 	len = snprintf(bp, dlen, "dmas: %08lu\n",
 					mdp4_stat.kickoff_dmas);
+	bp += len;
+	dlen -= len;
+	len = snprintf(bp, dlen, "mixer_reset: %08lu\n",
+					mdp4_stat.mixer_reset);
 
 	bp += len;
 	dlen -= len;

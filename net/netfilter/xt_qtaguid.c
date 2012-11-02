@@ -1481,12 +1481,7 @@ static void if_tag_stat_update(const char *ifname, uid_t uid,
 		 */
 		BUG_ON(!new_tag_stat);
 	}
-
-	if (new_tag_stat)
 		tag_stat_update(new_tag_stat, direction, proto, bytes);
-	else
-		WARN(1, "%s: new_tag_stat is NULL\n", __func__);
-
 	spin_unlock_bh(&iface_entry->tag_stat_list_lock);
 }
 
