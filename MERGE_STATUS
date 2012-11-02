@@ -1,0 +1,1024 @@
+# Not currently on any branch.
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	modified:   Makefile
+#	modified:   arch/arm/Kconfig
+#	modified:   arch/arm/configs/accelerate_defconfig
+#	modified:   arch/arm/configs/accelerate_eng_defconfig
+#	modified:   arch/arm/configs/aegis2_defconfig
+#	modified:   arch/arm/configs/aegis2_eng_defconfig
+#	modified:   arch/arm/configs/apexq_defconfig
+#	modified:   arch/arm/configs/apexq_eng_defconfig
+#	modified:   arch/arm/configs/apexq_rev02_defconfig
+#	modified:   arch/arm/configs/apexq_rev02_eng_defconfig
+#	modified:   arch/arm/configs/apq8064_defconfig
+#	modified:   arch/arm/configs/comanche_defconfig
+#	modified:   arch/arm/configs/comanche_eng_defconfig
+#	modified:   arch/arm/configs/comanche_rev02_defconfig
+#	modified:   arch/arm/configs/comanche_rev02_eng_defconfig
+#	new file:   arch/arm/configs/espresso10_att_defconfig
+#	new file:   arch/arm/configs/espresso10_att_eng_defconfig
+#	new file:   arch/arm/configs/espresso10_spr_defconfig
+#	new file:   arch/arm/configs/espresso10_spr_eng_defconfig
+#	modified:   arch/arm/configs/espresso10_vzw_defconfig
+#	modified:   arch/arm/configs/espresso10_vzw_eng_defconfig
+#	modified:   arch/arm/configs/espresso_att_defconfig
+#	modified:   arch/arm/configs/espresso_att_eng_defconfig
+#	new file:   arch/arm/configs/espresso_spr_defconfig
+#	renamed:    arch/arm/configs/espresso_eng_defconfig -> arch/arm/configs/espresso_spr_eng_defconfig
+#	modified:   arch/arm/configs/espresso_vzw_defconfig
+#	modified:   arch/arm/configs/espresso_vzw_eng_defconfig
+#	modified:   arch/arm/configs/express_defconfig
+#	modified:   arch/arm/configs/express_eng_defconfig
+#	new file:   arch/arm/configs/express_rev03_defconfig
+#	new file:   arch/arm/configs/express_rev03_eng_defconfig
+#	modified:   arch/arm/configs/gogh_defconfig
+#	modified:   arch/arm/configs/gogh_eng_defconfig
+#	new file:   arch/arm/configs/infinite_defconfig
+#	new file:   arch/arm/configs/infinite_eng_defconfig
+#	modified:   arch/arm/configs/jaguar_defconfig
+#	modified:   arch/arm/configs/jaguar_eng_defconfig
+#	modified:   arch/arm/configs/jaguar_kt_defconfig
+#	modified:   arch/arm/configs/jaguar_kt_eng_defconfig
+#	modified:   arch/arm/configs/jaguar_lgt_defconfig
+#	modified:   arch/arm/configs/jaguar_lgt_eng_defconfig
+#	modified:   arch/arm/configs/jasper_defconfig
+#	modified:   arch/arm/configs/jasper_eng_defconfig
+#	new file:   arch/arm/configs/k2_kdi_defconfig
+#	new file:   arch/arm/configs/k2_kdi_eng_defconfig
+#	modified:   arch/arm/configs/kenos_defconfig
+#	modified:   arch/arm/configs/m2_att_defconfig
+#	modified:   arch/arm/configs/m2_att_eng_defconfig
+#	new file:   arch/arm/configs/m2_cric_defconfig
+#	new file:   arch/arm/configs/m2_cric_eng_defconfig
+#	modified:   arch/arm/configs/m2_dcm_defconfig
+#	modified:   arch/arm/configs/m2_dcm_eng_defconfig
+#	new file:   arch/arm/configs/m2_mpcs_defconfig
+#	new file:   arch/arm/configs/m2_mpcs_eng_defconfig
+#	modified:   arch/arm/configs/m2_skt_defconfig
+#	modified:   arch/arm/configs/m2_skt_eng_defconfig
+#	modified:   arch/arm/configs/m2_spr_defconfig
+#	modified:   arch/arm/configs/m2_spr_eng_defconfig
+#	modified:   arch/arm/configs/m2_uscc_defconfig
+#	modified:   arch/arm/configs/m2_uscc_eng_defconfig
+#	modified:   arch/arm/configs/m2_vzw_defconfig
+#	modified:   arch/arm/configs/m2_vzw_eng_defconfig
+#	modified:   arch/arm/configs/msm7627a-perf_defconfig
+#	modified:   arch/arm/configs/msm7627a_defconfig
+#	modified:   arch/arm/configs/msm8960-perf_defconfig
+#	modified:   arch/arm/configs/msm8960_defconfig
+#	new file:   arch/arm/configs/stretto_defconfig
+#	new file:   arch/arm/configs/stretto_eng_defconfig
+#	new file:   arch/arm/configs/superiorlte_skt_defconfig
+#	new file:   arch/arm/configs/superiorlte_skt_eng_defconfig
+#	modified:   arch/arm/configs/t_project_rev00_defconfig
+#	modified:   arch/arm/include/asm/mach/mmc.h
+#	modified:   arch/arm/include/asm/system.h
+#	modified:   arch/arm/kernel/setup.c
+#	modified:   arch/arm/kernel/smp.c
+#	modified:   arch/arm/mach-msm/Kconfig
+#	modified:   arch/arm/mach-msm/Makefile
+#	modified:   arch/arm/mach-msm/bam_dmux.c
+#	new file:   arch/arm/mach-msm/board-8064-display.c
+#	modified:   arch/arm/mach-msm/board-8064-regulator.c
+#	modified:   arch/arm/mach-msm/board-8064-storage.c
+#	modified:   arch/arm/mach-msm/board-8930-display.c
+#	modified:   arch/arm/mach-msm/board-8930-storage.c
+#	modified:   arch/arm/mach-msm/board-8960-camera.c
+#	modified:   arch/arm/mach-msm/board-8960-display.c
+#	modified:   arch/arm/mach-msm/board-8960-pmic.c
+#	modified:   arch/arm/mach-msm/board-8960-regulator.c
+#	modified:   arch/arm/mach-msm/board-8960-storage.c
+#	modified:   arch/arm/mach-msm/board-8960.c
+#	modified:   arch/arm/mach-msm/board-8960.h
+#	modified:   arch/arm/mach-msm/board-9615-storage.c
+#	modified:   arch/arm/mach-msm/board-accelerate-battery.c
+#	modified:   arch/arm/mach-msm/board-accelerate.c
+#	modified:   arch/arm/mach-msm/board-aegis2-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-aegis2.c
+#	modified:   arch/arm/mach-msm/board-apexq-battery.c
+#	modified:   arch/arm/mach-msm/board-apexq-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-apexq.c
+#	modified:   arch/arm/mach-msm/board-comanche-battery.c
+#	modified:   arch/arm/mach-msm/board-comanche-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-comanche.c
+#	modified:   arch/arm/mach-msm/board-espresso-battery.c
+#	new file:   arch/arm/mach-msm/board-espresso10-battery.c
+#	new file:   arch/arm/mach-msm/board-espresso10_att-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-espresso10_att.c
+#	new file:   arch/arm/mach-msm/board-espresso10_spr-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-espresso10_spr.c
+#	modified:   arch/arm/mach-msm/board-espresso10_vzw-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-espresso10_vzw.c
+#	modified:   arch/arm/mach-msm/board-espresso_att.c
+#	new file:   arch/arm/mach-msm/board-espresso_spr-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-espresso_spr.c
+#	modified:   arch/arm/mach-msm/board-espresso_vzw-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-espresso_vzw.c
+#	modified:   arch/arm/mach-msm/board-express-battery.c
+#	modified:   arch/arm/mach-msm/board-express-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-express.c
+#	modified:   arch/arm/mach-msm/board-gogh-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-gogh-tsp.c
+#	modified:   arch/arm/mach-msm/board-gogh.c
+#	new file:   arch/arm/mach-msm/board-infinite-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-infinite.c
+#	modified:   arch/arm/mach-msm/board-jaguar-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-jaguar.c
+#	modified:   arch/arm/mach-msm/board-jasper-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-jasper.c
+#	new file:   arch/arm/mach-msm/board-k2_kdi-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-k2_kdi.c
+#	modified:   arch/arm/mach-msm/board-kenos.c
+#	modified:   arch/arm/mach-msm/board-m2_att.c
+#	modified:   arch/arm/mach-msm/board-m2_dcm.c
+#	modified:   arch/arm/mach-msm/board-m2_skt.c
+#	modified:   arch/arm/mach-msm/board-m2_spr.c
+#	modified:   arch/arm/mach-msm/board-m2_vzw-gpiomux.c
+#	modified:   arch/arm/mach-msm/board-m2_vzw.c
+#	modified:   arch/arm/mach-msm/board-mahimahi-smb329.c
+#	modified:   arch/arm/mach-msm/board-mms-tsp.c
+#	modified:   arch/arm/mach-msm/board-msm7x27a.c
+#	new file:   arch/arm/mach-msm/board-msm8x60-camera.c
+#	modified:   arch/arm/mach-msm/board-msm8x60.c
+#	modified:   arch/arm/mach-msm/board-sapphire-keypad.c
+#	modified:   arch/arm/mach-msm/board-sapphire-mmc.c
+#	new file:   arch/arm/mach-msm/board-storage-common-a.h
+#	new file:   arch/arm/mach-msm/board-stretto-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-stretto.c
+#	new file:   arch/arm/mach-msm/board-superiorlte_skt-gpiomux.c
+#	new file:   arch/arm/mach-msm/board-superiorlte_skt.c
+#	modified:   arch/arm/mach-msm/board-t-project-camera.c
+#	modified:   arch/arm/mach-msm/board-t-project.c
+#	modified:   arch/arm/mach-msm/board-usb-switch.c
+#	modified:   arch/arm/mach-msm/cache_erp.c
+#	modified:   arch/arm/mach-msm/clock-8960.c
+#	modified:   arch/arm/mach-msm/clock-8x60.c
+#	modified:   arch/arm/mach-msm/clock-debug.c
+#	modified:   arch/arm/mach-msm/clock-dss-8960.c
+#	modified:   arch/arm/mach-msm/devices-8960.c
+#	modified:   arch/arm/mach-msm/devices-msm7x30.c
+#	modified:   arch/arm/mach-msm/devices-msm8x60.c
+#	modified:   arch/arm/mach-msm/devices.h
+#	modified:   arch/arm/mach-msm/gpio-v2.c
+#	modified:   arch/arm/mach-msm/include/mach/accelerate-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/aegis2-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/apexq-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/board-msm8660.h
+#	modified:   arch/arm/mach-msm/include/mach/board-msm8960-camera.h
+#	modified:   arch/arm/mach-msm/include/mach/board.h
+#	modified:   arch/arm/mach-msm/include/mach/camera.h
+#	modified:   arch/arm/mach-msm/include/mach/comanche-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/cpu.h
+#	new file:   arch/arm/mach-msm/include/mach/espresso10_att-gpio.h
+#	new file:   arch/arm/mach-msm/include/mach/espresso10_spr-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/espresso10_vzw-gpio.h
+#	new file:   arch/arm/mach-msm/include/mach/espresso_spr-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/express-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/gogh-gpio.h
+#	new file:   arch/arm/mach-msm/include/mach/infinite-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/jaguar-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/jasper-gpio.h
+#	new file:   arch/arm/mach-msm/include/mach/k2_kdi-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/kenos-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/m2_att-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/m2_dcm-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/m2_skt-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/m2_vzw-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/msm8960-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/sec_debug.h
+#	new file:   arch/arm/mach-msm/include/mach/stretto-gpio.h
+#	new file:   arch/arm/mach-msm/include/mach/superiorlte_skt-gpio.h
+#	modified:   arch/arm/mach-msm/include/mach/t-project-gpio.h
+#	modified:   arch/arm/mach-msm/ipc_router.c
+#	modified:   arch/arm/mach-msm/ipc_router.h
+#	modified:   arch/arm/mach-msm/ipc_socket.c
+#	modified:   arch/arm/mach-msm/jtag.c
+#	modified:   arch/arm/mach-msm/lpass-8960.c
+#	modified:   arch/arm/mach-msm/modem-8960.c
+#	modified:   arch/arm/mach-msm/msm_dcvs.c
+#	modified:   arch/arm/mach-msm/msm_show_resume_irq.c
+#	modified:   arch/arm/mach-msm/pil-q6v4.c
+#	modified:   arch/arm/mach-msm/pil-q6v4.h
+#	modified:   arch/arm/mach-msm/pil-tzapps.c
+#	modified:   arch/arm/mach-msm/pm-8x60.c
+#	modified:   arch/arm/mach-msm/qdsp5/adsp.c
+#	modified:   arch/arm/mach-msm/qdsp5/adsp.h
+#	modified:   arch/arm/mach-msm/qdsp5/adsp_driver.c
+#	modified:   arch/arm/mach-msm/qdsp5/adsp_video_verify_cmd.c
+#	modified:   arch/arm/mach-msm/qdsp5/adsp_videoenc_verify_cmd.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_aac.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_aac_in.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_amrnb.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_amrnb_in.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_amrwb.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_evrc.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_evrc_in.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_mp3.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_pcm.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_pcm_in.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_qcelp.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_qcelp_in.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_wma.c
+#	modified:   arch/arm/mach-msm/qdsp5/audio_wmapro.c
+#	modified:   arch/arm/mach-msm/qdsp5v2/Makefile
+#	modified:   arch/arm/mach-msm/qdsp6v2/apr_tal.c
+#	modified:   arch/arm/mach-msm/qdsp6v2/audio_multi_aac.c
+#	modified:   arch/arm/mach-msm/qdsp6v2/dsp_debug.c
+#	modified:   arch/arm/mach-msm/qdsp6v2/rtac.c
+#	modified:   arch/arm/mach-msm/ramdump.c
+#	modified:   arch/arm/mach-msm/restart.c
+#	modified:   arch/arm/mach-msm/rpm-regulator.c
+#	modified:   arch/arm/mach-msm/rpm.c
+#	modified:   arch/arm/mach-msm/rpm_log.c
+#	modified:   arch/arm/mach-msm/sdio_ctl.c
+#	new file:   arch/arm/mach-msm/sec-switch.c
+#	modified:   arch/arm/mach-msm/sec_gaf.c
+#	modified:   arch/arm/mach-msm/sec_getlog.c
+#	modified:   arch/arm/mach-msm/smd.c
+#	modified:   arch/arm/mach-msm/smd_rpc_sym.c
+#	modified:   arch/arm/mach-msm/subsystem-fatal-8x60.c
+#	modified:   arch/arm/mm/tlb-v7.S
+#	modified:   arch/arm/tools/mach-types
+#	modified:   arch/arm/vfp/vfpmodule.c
+#	modified:   arch/x86/kernel/process_32.c
+#	modified:   drivers/accessory/Kconfig
+#	modified:   drivers/accessory/Makefile
+#	new file:   drivers/accessory/mhl_tab_v2/Kconfig
+#	new file:   drivers/accessory/mhl_tab_v2/Makefile
+#	new file:   drivers/accessory/mhl_tab_v2/sii9234.c
+#	new file:   drivers/accessory/mhl_tab_v2/sii9234_driver.h
+#	modified:   drivers/accessory/sec_keyboard.c
+#	modified:   drivers/accessory/sec_keyboard.h
+#	modified:   drivers/accessory/sec_tablet_conn.c
+#	modified:   drivers/base/Kconfig
+#	modified:   drivers/base/Makefile
+#	new file:   drivers/base/sw_sync.c
+#	new file:   drivers/base/sync.c
+#	modified:   drivers/battery/bq24157_charger.c
+#	modified:   drivers/battery/max17048_fuelgauge.c
+#	modified:   drivers/battery/max17050_fuelgauge.c
+#	modified:   drivers/battery/sec_battery.c
+#	modified:   drivers/battery/sec_charger.c
+#	modified:   drivers/battery/sec_fuelgauge.c
+#	modified:   drivers/battery/smb347_charger.c
+#	modified:   drivers/bluetooth/hci_smd.c
+#	modified:   drivers/char/diag/diagchar.h
+#	modified:   drivers/char/diag/diagchar_core.c
+#	modified:   drivers/char/diag/diagfwd.c
+#	modified:   drivers/char/diag/diagfwd_cntl.c
+#	modified:   drivers/cpufreq/cpufreq_gov_msm.c
+#	modified:   drivers/crypto/msm/qcedev.c
+#	modified:   drivers/gpu/msm/adreno_postmortem.c
+#	modified:   drivers/gpu/msm/adreno_postmortem.h
+#	modified:   drivers/gpu/msm/kgsl_device.h
+#	modified:   drivers/hid/hid-core.c
+#	modified:   drivers/hwmon/pm8xxx-adc.c
+#	modified:   drivers/input/evdev.c
+#	modified:   drivers/input/keyboard/cypress_touchkey/Makefile
+#	new file:   drivers/input/keyboard/cypress_touchkey/aegis2_tkey_fw.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/cypress-touchkey.c
+#	modified:   drivers/input/keyboard/cypress_touchkey/cypress_tkey_fw.h
+#	new file:   drivers/input/keyboard/cypress_touchkey/express_tkey_fw.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_defs.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_delays.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_directives.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_driver_routines.c
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_errors.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_extern.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_main.c
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_revision.h
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_routines.c
+#	modified:   drivers/input/keyboard/cypress_touchkey/issp_vectors.h
+#	modified:   drivers/input/keyboard/cypress_touchkey_236/apexq_tkey_fw.h
+#	modified:   drivers/input/keyboard/cypress_touchkey_236/cypress-touchkey-236.c
+#	modified:   drivers/input/keyboard/cypress_touchkey_236/cypress_tkey_fw.h
+#	modified:   drivers/input/keyboard/cypress_touchkey_236/gogh_tkey_fw.h
+#	modified:   drivers/input/keyboard/gpio_keys.c
+#	modified:   drivers/input/misc/bmp180.c
+#	modified:   drivers/input/misc/pmic8xxx-pwrkey.c
+#	modified:   drivers/input/touchscreen/Kconfig
+#	modified:   drivers/input/touchscreen/Makefile
+#	modified:   drivers/input/touchscreen/apexq_fw.h
+#	modified:   drivers/input/touchscreen/atmel_maxtouch.c
+#	modified:   drivers/input/touchscreen/atmel_mxt_ts.c
+#	modified:   drivers/input/touchscreen/cy8c_ts.c
+#	modified:   drivers/input/touchscreen/cyttsp-i2c.c
+#	modified:   drivers/input/touchscreen/cyttsp_fw.h
+#	modified:   drivers/input/touchscreen/gogh_fw.h
+#	new file:   drivers/input/touchscreen/infinite_fw.h
+#	modified:   drivers/input/touchscreen/jasper_fw.h
+#	new file:   drivers/input/touchscreen/mXT224S__APP_v1_1_AA_.h
+#	modified:   drivers/input/touchscreen/mms_ts_136.c
+#	modified:   drivers/input/touchscreen/mms_ts_136_tablet.c
+#	modified:   drivers/input/touchscreen/mms_ts_144.c
+#	modified:   drivers/input/touchscreen/mms_ts_fw.h
+#	new file:   drivers/input/touchscreen/mxt224s.c
+#	new file:   drivers/input/touchscreen/synaptics_fw.h
+#	new file:   drivers/input/touchscreen/synaptics_fw_updater.c
+#	new file:   drivers/input/touchscreen/synaptics_fw_updater.h
+#	new file:   drivers/input/touchscreen/synaptics_s7301.c
+#	modified:   drivers/interceptor/Kconfig
+#	modified:   drivers/interceptor/Makefile
+#	modified:   drivers/interceptor/interceptor.h
+#	modified:   drivers/interceptor/kernel_alloc.c
+#	modified:   drivers/interceptor/linux_internal.h
+#	modified:   drivers/interceptor/linux_ip_glue.c
+#	modified:   drivers/interceptor/linux_ipm.c
+#	modified:   drivers/interceptor/linux_main.c
+#	modified:   drivers/interceptor/linux_procfs.c
+#	modified:   drivers/interceptor/linux_route.c
+#	modified:   drivers/interceptor/linux_usermode.c
+#	modified:   drivers/interceptor/linux_versions.h
+#	modified:   drivers/interceptor/linux_virtual_adapter.c
+#	modified:   drivers/interceptor/sshdebug.h
+#	modified:   drivers/interceptor/sshinetprint.c
+#	modified:   drivers/interceptor/usermodeforwarder.c
+#	modified:   drivers/irda/espresso_irda_fw.h
+#	modified:   drivers/irda/ir_remote_con.c
+#	modified:   drivers/leds/Kconfig
+#	modified:   drivers/leds/Makefile
+#	modified:   drivers/leds/leds-aat1290a.c
+#	new file:   drivers/leds/leds-max77693.c
+#	modified:   drivers/leds/leds-msm-tkey.c
+#	modified:   drivers/media/radio/radio-tavarua.c
+#	modified:   drivers/media/tdmb/Kconfig
+#	modified:   drivers/media/tdmb/Makefile
+#	modified:   drivers/media/tdmb/fc8050/bbm.c
+#	modified:   drivers/media/tdmb/fc8050/bbm.h
+#	modified:   drivers/media/tdmb/fc8050/dmbdrv_wrap_fc8050.c
+#	modified:   drivers/media/tdmb/fc8050/dmbdrv_wrap_fc8050.h
+#	modified:   drivers/media/tdmb/fc8050/fc8050_bb.c
+#	modified:   drivers/media/tdmb/fc8050/fc8050_bb.h
+#	modified:   drivers/media/tdmb/fc8050/fc8050_i2c.c
+#	modified:   drivers/media/tdmb/fc8050/fc8050_i2c.h
+#	modified:   drivers/media/tdmb/fc8050/fc8050_isr.c
+#	modified:   drivers/media/tdmb/fc8050/fc8050_isr.h
+#	modified:   drivers/media/tdmb/fc8050/fc8050_regs.h
+#	modified:   drivers/media/tdmb/fc8050/fc8050_spi.c
+#	modified:   drivers/media/tdmb/fc8050/fc8050_spi.h
+#	modified:   drivers/media/tdmb/fc8050/fc8050_tun.c
+#	modified:   drivers/media/tdmb/fc8050/fc8050_tun.h
+#	modified:   drivers/media/tdmb/fc8050/fci_hal.c
+#	modified:   drivers/media/tdmb/fc8050/fci_hal.h
+#	modified:   drivers/media/tdmb/fc8050/fci_i2c.c
+#	modified:   drivers/media/tdmb/fc8050/fci_i2c.h
+#	modified:   drivers/media/tdmb/fc8050/fci_oal.c
+#	modified:   drivers/media/tdmb/fc8050/fci_oal.h
+#	modified:   drivers/media/tdmb/fc8050/fci_tun.c
+#	modified:   drivers/media/tdmb/fc8050/fci_tun.h
+#	modified:   drivers/media/tdmb/fc8050/fci_types.h
+#	modified:   drivers/media/tdmb/fc8050/fic.c
+#	modified:   drivers/media/tdmb/fc8050/fic.h
+#	modified:   drivers/media/tdmb/fc8050/ficdecoder.c
+#	modified:   drivers/media/tdmb/fc8050/ficdecoder.h
+#	modified:   drivers/media/tdmb/tcc3170/inc/tcbd_feature.h
+#	modified:   drivers/media/tdmb/tcc3170/inc/tcc317x_boot_tdmb.h
+#	modified:   drivers/media/tdmb/tcc3170/src/tcbd_api_common.c
+#	modified:   drivers/media/tdmb/tcc3170/src/tcbd_drv_io.c
+#	modified:   drivers/media/tdmb/tcc3170/src/tcbd_drv_ip.c
+#	modified:   drivers/media/tdmb/tcc3170/src/tcbd_drv_peri.c
+#	modified:   drivers/media/tdmb/tcc3170/src/tcc_fic_decoder/tcc_fic_decoder.c
+#	modified:   drivers/media/tdmb/tdmb.c
+#	modified:   drivers/media/tdmb/tdmb.h
+#	modified:   drivers/media/tdmb/tdmb_data.c
+#	modified:   drivers/media/tdmb/tdmb_ebi.c
+#	modified:   drivers/media/tdmb/tdmb_port_fc8050.c
+#	modified:   drivers/media/tdmb/tdmb_port_tcc3170.c
+#	modified:   drivers/media/tdmb/tdmb_spi.c
+#	modified:   drivers/media/video/msm/Makefile
+#	modified:   drivers/media/video/msm/actuators/msm_actuator.c
+#	modified:   drivers/media/video/msm/cam_pmic_s5k6aa.c
+#	modified:   drivers/media/video/msm/cam_pmic_s5k6aa.h
+#	modified:   drivers/media/video/msm/csi/Makefile
+#	modified:   drivers/media/video/msm/csi/msm_csic.c
+#	modified:   drivers/media/video/msm/csi/msm_csic.h
+#	modified:   drivers/media/video/msm/csi/msm_csid.c
+#	modified:   drivers/media/video/msm/csi/msm_csiphy.c
+#	modified:   drivers/media/video/msm/gemini/msm_gemini_core.c
+#	modified:   drivers/media/video/msm/gemini/msm_gemini_hw.h
+#	modified:   drivers/media/video/msm/gemini/msm_gemini_platform.c
+#	modified:   drivers/media/video/msm/gemini/msm_gemini_platform.h
+#	modified:   drivers/media/video/msm/gemini/msm_gemini_sync.c
+#	modified:   drivers/media/video/msm/io/msm_camera_i2c.c
+#	modified:   drivers/media/video/msm/io/msm_io_util.c
+#	modified:   drivers/media/video/msm/msm.c
+#	modified:   drivers/media/video/msm/msm.h
+#	new file:   drivers/media/video/msm/msm_io_vfe31_v4l2.c
+#	modified:   drivers/media/video/msm/msm_isp.c
+#	modified:   drivers/media/video/msm/msm_mctl.c
+#	modified:   drivers/media/video/msm/msm_mem.c
+#	new file:   drivers/media/video/msm/msm_vfe31_v4l2.c
+#	new file:   drivers/media/video/msm/msm_vfe31_v4l2.h
+#	modified:   drivers/media/video/msm/msm_vfe32.c
+#	modified:   drivers/media/video/msm/msm_vfe7x27a_v4l2.c
+#	modified:   drivers/media/video/msm/msm_vpe.c
+#	modified:   drivers/media/video/msm/msm_vpe1.c
+#	modified:   drivers/media/video/msm/s5k6aa.h
+#	modified:   drivers/media/video/msm/s5k6aa_regs.h
+#	modified:   drivers/media/video/msm/s5k6aa_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/Makefile
+#	modified:   drivers/media/video/msm/sensors/db8131m.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_reg.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_reg_aegis2.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_reg_apexq.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_reg_comanche.h
+#	new file:   drivers/media/video/msm/sensors/db8131m_reg_express.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_reg_jasper.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_reg_v2.h
+#	modified:   drivers/media/video/msm/sensors/db8131m_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/imx074_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/isx012.h
+#	modified:   drivers/media/video/msm/sensors/isx012_regs_aegis2.h
+#	modified:   drivers/media/video/msm/sensors/isx012_regs_apexq.h
+#	modified:   drivers/media/video/msm/sensors/isx012_regs_comanche.h
+#	new file:   drivers/media/video/msm/sensors/isx012_regs_express.h
+#	new file:   drivers/media/video/msm/sensors/isx012_regs_stretto.h
+#	modified:   drivers/media/video/msm/sensors/isx012_regs_v2.h
+#	modified:   drivers/media/video/msm/sensors/isx012_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/msm_sensor.c
+#	modified:   drivers/media/video/msm/sensors/msm_sensor.h
+#	modified:   drivers/media/video/msm/sensors/mt9e013_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/ov2720.c
+#	new file:   drivers/media/video/msm/sensors/ov7692.c
+#	modified:   drivers/media/video/msm/sensors/ov9726_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/s5k3l1yx.c
+#	modified:   drivers/media/video/msm/sensors/s5k4e1_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/s5k5ccgx.h
+#	modified:   drivers/media/video/msm/sensors/s5k5ccgx_regs.h
+#	modified:   drivers/media/video/msm/sensors/s5k5ccgx_regs_espresso.h
+#	new file:   drivers/media/video/msm/sensors/s5k5ccgx_regs_espresso10.h
+#	modified:   drivers/media/video/msm/sensors/s5k5ccgx_v4l2.c
+#	new file:   drivers/media/video/msm/sensors/s5k6a3yx_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/s5k8aay_regs_v2.h
+#	modified:   drivers/media/video/msm/sensors/s5k8aay_v4l2.c
+#	modified:   drivers/media/video/msm/sensors/sr030pc50.h
+#	modified:   drivers/media/video/msm/sensors/sr030pc50_regs.h
+#	modified:   drivers/media/video/msm/sensors/sr030pc50_regs_v2.h
+#	modified:   drivers/media/video/msm/sensors/sr030pc50_v4l2.c
+#	modified:   drivers/media/video/msm_zsl/Makefile
+#	modified:   drivers/media/video/msm_zsl/msm_vfe32.c
+#	modified:   drivers/media/video/msm_zsl/msm_vfe32.h
+#	modified:   drivers/media/video/msm_zsl/sensors/s5c73m3.h
+#	deleted:    drivers/media/video/msm_zsl/wfd/Makefile
+#	deleted:    drivers/media/video/msm_zsl/wfd/enc-subdev.h
+#	deleted:    drivers/media/video/msm_zsl/wfd/mdp-subdev.c
+#	deleted:    drivers/media/video/msm_zsl/wfd/mdp-subdev.h
+#	deleted:    drivers/media/video/msm_zsl/wfd/vsg-subdev.c
+#	deleted:    drivers/media/video/msm_zsl/wfd/vsg-subdev.h
+#	deleted:    drivers/media/video/msm_zsl/wfd/wfd-ioctl.c
+#	deleted:    drivers/media/video/msm_zsl/wfd/wfd-util.c
+#	deleted:    drivers/media/video/msm_zsl/wfd/wfd-util.h
+#	modified:   drivers/mfd/Kconfig
+#	modified:   drivers/mfd/Makefile
+#	new file:   drivers/mfd/max77693-irq.c
+#	new file:   drivers/mfd/max77693.c
+#	modified:   drivers/mfd/pm8xxx-misc.c
+#	modified:   drivers/mfd/wcd9310-irq.c
+#	modified:   drivers/misc/Kconfig
+#	modified:   drivers/misc/Makefile
+#	modified:   drivers/misc/a2220.c
+#	modified:   drivers/misc/a2220_firmware.h
+#	new file:   drivers/misc/a2220_firmware_aegis2.h
+#	modified:   drivers/misc/a2220_firmware_comanche.h
+#	new file:   drivers/misc/a2220_firmware_express.h
+#	modified:   drivers/misc/a2220_firmware_gogh.h
+#	modified:   drivers/misc/a2220_firmware_i747.h
+#	new file:   drivers/misc/a2220_firmware_jasper.h
+#	modified:   drivers/misc/a2220_firmware_t999.h
+#	modified:   drivers/misc/ak8975-reg.h
+#	modified:   drivers/misc/al3201.c
+#	new file:   drivers/misc/bh1721.c
+#	modified:   drivers/misc/cm36651.c
+#	modified:   drivers/misc/fsa9485.c
+#	modified:   drivers/misc/gp2a_light.c
+#	modified:   drivers/misc/gp2a_proximity.c
+#	modified:   drivers/misc/gp2ap020.c
+#	modified:   drivers/misc/inv_mpu/accel/mpu6050.c
+#	modified:   drivers/misc/inv_mpu/mldl_cfg.c
+#	modified:   drivers/misc/inv_mpu/mldl_cfg.h
+#	modified:   drivers/misc/inv_mpu/mpu-dev.c
+#	modified:   drivers/misc/inv_mpu/mpuirq.c
+#	modified:   drivers/misc/inv_mpu/timerirq.c
+#	new file:   drivers/misc/max77693-muic.c
+#	deleted:    drivers/misc/mpu3050/Kconfig
+#	deleted:    drivers/misc/mpu3050/Makefile
+#	deleted:    drivers/misc/mpu3050/accel/mantis.c
+#	deleted:    drivers/misc/mpu3050/compass/ak8975.c
+#	deleted:    drivers/misc/mpu3050/log.h
+#	deleted:    drivers/misc/mpu3050/mldl_cfg.c
+#	deleted:    drivers/misc/mpu3050/mldl_cfg.h
+#	deleted:    drivers/misc/mpu3050/mlos-kernel.c
+#	deleted:    drivers/misc/mpu3050/mlos.h
+#	deleted:    drivers/misc/mpu3050/mlsl-kernel.c
+#	deleted:    drivers/misc/mpu3050/mlsl.h
+#	deleted:    drivers/misc/mpu3050/mltypes.h
+#	deleted:    drivers/misc/mpu3050/mpu-dev.c
+#	deleted:    drivers/misc/mpu3050/mpu-i2c.c
+#	deleted:    drivers/misc/mpu3050/mpu-i2c.h
+#	deleted:    drivers/misc/mpu3050/mpuirq.c
+#	deleted:    drivers/misc/mpu3050/mpuirq.h
+#	deleted:    drivers/misc/mpu3050/slaveirq.c
+#	deleted:    drivers/misc/mpu3050/slaveirq.h
+#	deleted:    drivers/misc/mpu3050/timerirq.c
+#	deleted:    drivers/misc/mpu3050/timerirq.h
+#	modified:   drivers/misc/pn544.c
+#	modified:   drivers/misc/qseecom.c
+#	modified:   drivers/misc/sec_jack.c
+#	modified:   drivers/misc/sec_misc.c
+#	modified:   drivers/misc/sec_param.c
+#	modified:   drivers/misc/stmpe811.c
+#	modified:   drivers/misc/taos.c
+#	modified:   drivers/misc/yas532/accelerometer/yas_acc_kernel_driver.c
+#	modified:   drivers/misc/yas532/geomagnetic/yas_mag_kernel_driver.c
+#	modified:   drivers/mmc/card/Makefile
+#	modified:   drivers/mmc/core/bus.c
+#	modified:   drivers/mmc/core/core.c
+#	modified:   drivers/mmc/core/mmc.c
+#	modified:   drivers/mmc/core/sd.c
+#	modified:   drivers/mmc/core/sdio_io.c
+#	modified:   drivers/mmc/core/sdio_irq.c
+#	modified:   drivers/mmc/host/msm_sdcc.c
+#	modified:   drivers/mmc/host/msm_sdcc.h
+#	modified:   drivers/motor/Kconfig
+#	modified:   drivers/motor/Makefile
+#	modified:   drivers/motor/immvibespi.c
+#	new file:   drivers/motor/max77693_haptic.c
+#	modified:   drivers/motor/tspdrv.c
+#	modified:   drivers/motor/tspdrv.h
+#	modified:   drivers/net/wireless/bcm4329/dhd_common.c
+#	modified:   drivers/net/wireless/bcm4329/dhd_linux.c
+#	modified:   drivers/net/wireless/bcmdhd/Kconfig
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/aiutils.c -> drivers/net/wireless/bcmdhd/aiutils.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/bcmevent.c -> drivers/net/wireless/bcmdhd/bcmevent.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/bcmsdio/sys/bcmsdh.c -> drivers/net/wireless/bcmdhd/bcmsdh.c
+#	new file:   drivers/net/wireless/bcmdhd/bcmsdspi_linux.c
+#	new file:   drivers/net/wireless/bcmdhd/bcmspibrcm.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/bcmutils.c -> drivers/net/wireless/bcmdhd/bcmutils.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/bcmwifi/src/bcmwifi_channels.c -> drivers/net/wireless/bcmdhd/bcmwifi_channels.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/bcmwifi/include/bcmwifi_channels.h -> drivers/net/wireless/bcmdhd/bcmwifi_channels.h
+#	new file:   drivers/net/wireless/bcmdhd/bcmwifi_rates.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_bta.c -> drivers/net/wireless/bcmdhd/dhd_bta.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_bta.h -> drivers/net/wireless/bcmdhd/dhd_bta.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_bus.h -> drivers/net/wireless/bcmdhd/dhd_bus.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_cfg80211.h -> drivers/net/wireless/bcmdhd/dhd_cfg80211.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_custom_gpio.c -> drivers/net/wireless/bcmdhd/dhd_custom_gpio.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_dbg.h -> drivers/net/wireless/bcmdhd/dhd_dbg.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_linux_sched.c -> drivers/net/wireless/bcmdhd/dhd_linux_sched.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_proto.h -> drivers/net/wireless/bcmdhd/dhd_proto.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dongle/dngl_stats.h -> drivers/net/wireless/bcmdhd/dngl_stats.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/dongle/dngl_wlhdr.h -> drivers/net/wireless/bcmdhd/dngl_wlhdr.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/hndpmu.c -> drivers/net/wireless/bcmdhd/hndpmu.c
+#	new file:   drivers/net/wireless/bcmdhd/include/Makefile
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/aidmp.h -> drivers/net/wireless/bcmdhd/include/aidmp.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcm_cfg.h -> drivers/net/wireless/bcmdhd/include/bcm_cfg.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcm_mpool_pub.h -> drivers/net/wireless/bcmdhd/include/bcm_mpool_pub.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmcdc.h -> drivers/net/wireless/bcmdhd/include/bcmcdc.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmdefs.h -> drivers/net/wireless/bcmdhd/include/bcmdefs.h
+#	new file:   drivers/net/wireless/bcmdhd/include/bcmdevs.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmendian.h -> drivers/net/wireless/bcmdhd/include/bcmendian.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmnvram.h -> drivers/net/wireless/bcmdhd/include/bcmnvram.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmpcispi.h -> drivers/net/wireless/bcmdhd/include/bcmpcispi.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmperf.h -> drivers/net/wireless/bcmdhd/include/bcmperf.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmsdbus.h -> drivers/net/wireless/bcmdhd/include/bcmsdbus.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmsdh.h -> drivers/net/wireless/bcmdhd/include/bcmsdh.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmsdh_sdmmc.h -> drivers/net/wireless/bcmdhd/include/bcmsdh_sdmmc.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmsdpcm.h -> drivers/net/wireless/bcmdhd/include/bcmsdpcm.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmsdspi.h -> drivers/net/wireless/bcmdhd/include/bcmsdspi.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmsdstd.h -> drivers/net/wireless/bcmdhd/include/bcmsdstd.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmspi.h -> drivers/net/wireless/bcmdhd/include/bcmspi.h
+#	new file:   drivers/net/wireless/bcmdhd/include/bcmspibrcm.h
+#	new file:   drivers/net/wireless/bcmdhd/include/bcmsrom_fmt.h
+#	new file:   drivers/net/wireless/bcmdhd/include/bcmsrom_tbl.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/bcmutils.h -> drivers/net/wireless/bcmdhd/include/bcmutils.h
+#	new file:   drivers/net/wireless/bcmdhd/include/dbus.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/dhdioctl.h -> drivers/net/wireless/bcmdhd/include/dhdioctl.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/hndpmu.h -> drivers/net/wireless/bcmdhd/include/hndpmu.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/hndrte_armtrap.h -> drivers/net/wireless/bcmdhd/include/hndrte_armtrap.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/hndrte_cons.h -> drivers/net/wireless/bcmdhd/include/hndrte_cons.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/hndsoc.h -> drivers/net/wireless/bcmdhd/include/hndsoc.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/linux_osl.h -> drivers/net/wireless/bcmdhd/include/linux_osl.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/linuxver.h -> drivers/net/wireless/bcmdhd/include/linuxver.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/miniopt.h -> drivers/net/wireless/bcmdhd/include/miniopt.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/msgtrace.h -> drivers/net/wireless/bcmdhd/include/msgtrace.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/osl.h -> drivers/net/wireless/bcmdhd/include/osl.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/packed_section_end.h -> drivers/net/wireless/bcmdhd/include/packed_section_end.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/packed_section_start.h -> drivers/net/wireless/bcmdhd/include/packed_section_start.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/pcicfg.h -> drivers/net/wireless/bcmdhd/include/pcicfg.h
+#	new file:   drivers/net/wireless/bcmdhd/include/proto/802.11.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/802.11_bta.h -> drivers/net/wireless/bcmdhd/include/proto/802.11_bta.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/802.11e.h -> drivers/net/wireless/bcmdhd/include/proto/802.11e.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/802.1d.h -> drivers/net/wireless/bcmdhd/include/proto/802.1d.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/bcmeth.h -> drivers/net/wireless/bcmdhd/include/proto/bcmeth.h
+#	new file:   drivers/net/wireless/bcmdhd/include/proto/bcmevent.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/bcmip.h -> drivers/net/wireless/bcmdhd/include/proto/bcmip.h
+#	new file:   drivers/net/wireless/bcmdhd/include/proto/bcmipv6.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/bt_amp_hci.h -> drivers/net/wireless/bcmdhd/include/proto/bt_amp_hci.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/eapol.h -> drivers/net/wireless/bcmdhd/include/proto/eapol.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/ethernet.h -> drivers/net/wireless/bcmdhd/include/proto/ethernet.h
+#	new file:   drivers/net/wireless/bcmdhd/include/proto/p2p.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/sdspi.h -> drivers/net/wireless/bcmdhd/include/proto/sdspi.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/vlan.h -> drivers/net/wireless/bcmdhd/include/proto/vlan.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/wpa.h -> drivers/net/wireless/bcmdhd/include/proto/wpa.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/proto/wps.h -> drivers/net/wireless/bcmdhd/include/proto/wps.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sbchipc.h -> drivers/net/wireless/bcmdhd/include/sbchipc.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sbconfig.h -> drivers/net/wireless/bcmdhd/include/sbconfig.h
+#	new file:   drivers/net/wireless/bcmdhd/include/sbhnddma.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sbpcmcia.h -> drivers/net/wireless/bcmdhd/include/sbpcmcia.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sbsdio.h -> drivers/net/wireless/bcmdhd/include/sbsdio.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sbsdpcmdev.h -> drivers/net/wireless/bcmdhd/include/sbsdpcmdev.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sbsocram.h -> drivers/net/wireless/bcmdhd/include/sbsocram.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sdio.h -> drivers/net/wireless/bcmdhd/include/sdio.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sdioh.h -> drivers/net/wireless/bcmdhd/include/sdioh.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/sdiovar.h -> drivers/net/wireless/bcmdhd/include/sdiovar.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/siutils.h -> drivers/net/wireless/bcmdhd/include/siutils.h
+#	new file:   drivers/net/wireless/bcmdhd/include/spid.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/trxhdr.h -> drivers/net/wireless/bcmdhd/include/trxhdr.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/typedefs.h -> drivers/net/wireless/bcmdhd/include/typedefs.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/wlfc_proto.h -> drivers/net/wireless/bcmdhd/include/wlfc_proto.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/include/wlioctl.h -> drivers/net/wireless/bcmdhd/include/wlioctl.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/linux_osl.c -> drivers/net/wireless/bcmdhd/linux_osl.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/sbutils.c -> drivers/net/wireless/bcmdhd/sbutils.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/siutils.c -> drivers/net/wireless/bcmdhd/siutils.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/shared/siutils_priv.h -> drivers/net/wireless/bcmdhd/siutils_priv.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/bcmsdio/sys/bcmsdh_linux.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/bcmsdio/sys/bcmsdh_sdmmc.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/bcmsdio/sys/bcmsdh_sdmmc_linux.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_cdc.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_cfg80211.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_common.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_custom_sec.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_linux.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_sdio.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_sec_feature.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/dhd/sys/dhd_wlfc.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/include/bcmdevs.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/include/epivers.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/include/proto/802.11.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/include/proto/bcmevent.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/include/proto/p2p.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/include/sbhnddma.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_android.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.h
+#	deleted:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfgp2p.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_roam.c
+#	deleted:    drivers/net/wireless/bcmdhd/src/wl/sys/wldev_common.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/uamp_api.h -> drivers/net/wireless/bcmdhd/uamp_api.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_android.h -> drivers/net/wireless/bcmdhd/wl_android.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfgp2p.h -> drivers/net/wireless/bcmdhd/wl_cfgp2p.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_dbg.h -> drivers/net/wireless/bcmdhd/wl_dbg.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_iw.c -> drivers/net/wireless/bcmdhd/wl_iw.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_iw.h -> drivers/net/wireless/bcmdhd/wl_iw.h
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wl_linux_mon.c -> drivers/net/wireless/bcmdhd/wl_linux_mon.c
+#	new file:   drivers/net/wireless/bcmdhd/wl_roam.c
+#	renamed:    drivers/net/wireless/bcmdhd/src/wl/sys/wldev_common.h -> drivers/net/wireless/bcmdhd/wldev_common.h
+#	modified:   drivers/net/wireless/libra/libra_sdioif.c
+#	modified:   drivers/platform/msm/sps/Makefile
+#	modified:   drivers/power/Kconfig
+#	modified:   drivers/power/Makefile
+#	new file:   drivers/power/battery-factory.c
+#	new file:   drivers/power/battery-factory.h
+#	modified:   drivers/power/max17040_battery.c
+#	new file:   drivers/power/max17047_fuelgauge.c
+#	new file:   drivers/power/max77693_charger.c
+#	modified:   drivers/power/pm8921-bms.c
+#	modified:   drivers/power/pm8921-charger.c
+#	modified:   drivers/power/pm8921-sec-charger.c
+#	modified:   drivers/power/sec_battery.c
+#	modified:   drivers/power/smb347_charger.c
+#	new file:   drivers/power/stretto_battery.c
+#	modified:   drivers/regulator/Kconfig
+#	modified:   drivers/regulator/Makefile
+#	new file:   drivers/regulator/max77693.c
+#	modified:   drivers/rtc/alarm-dev.c
+#	modified:   drivers/rtc/class.c
+#	modified:   drivers/sensors/Kconfig
+#	modified:   drivers/sensors/Makefile
+#	modified:   drivers/sensors/core/Kconfig
+#	modified:   drivers/sensors/core/Makefile
+#	modified:   drivers/sensors/core/sensors_core.c
+#	modified:   drivers/staging/android/binder.c
+#	modified:   drivers/staging/android/logger.c
+#	modified:   drivers/staging/gobi/QCUSBNet2k/Makefile
+#	modified:   drivers/switch/switch_class.c
+#	modified:   drivers/thermal/msm8960_tsens.c
+#	modified:   drivers/tty/serial/msm_serial_hs_lite.c
+#	modified:   drivers/usb/core/sec_whitelist.h
+#	modified:   drivers/usb/gadget/ci13xxx_udc.c
+#	modified:   drivers/usb/gadget/f_mass_storage.c
+#	modified:   drivers/usb/gadget/f_mtp.h
+#	modified:   drivers/usb/gadget/f_mtp_samsung.c
+#	modified:   drivers/usb/gadget/f_rndis.c
+#	modified:   drivers/usb/gadget/serial_acm.c
+#	modified:   drivers/usb/gadget/u_ether.c
+#	modified:   drivers/usb/gadget/u_ncm.c
+#	modified:   drivers/usb/host/ehci-hcd.c
+#	modified:   drivers/usb/host/ehci-hub.c
+#	modified:   drivers/usb/host/pehci/host/otg.c
+#	modified:   drivers/usb/notify/Kconfig
+#	modified:   drivers/usb/notify/Makefile
+#	modified:   drivers/usb/notify/host_notify_class.c
+#	modified:   drivers/usb/otg/msm_otg.c
+#	modified:   drivers/video/msm/Kconfig
+#	modified:   drivers/video/msm/Makefile
+#	modified:   drivers/video/msm/external_common.c
+#	modified:   drivers/video/msm/hdmi_msm.h
+#	modified:   drivers/video/msm/logo.c
+#	modified:   drivers/video/msm/mdp4_video_enhance.c
+#	modified:   drivers/video/msm/mdp4_video_tuning.h
+#	modified:   drivers/video/msm/mdp4_wfd_writeback_panel.c
+#	modified:   drivers/video/msm/mdp_debugfs.c
+#	modified:   drivers/video/msm/mdp_ppp_v20.c
+#	modified:   drivers/video/msm/mhl_v1/Common_Def.h
+#	modified:   drivers/video/msm/mhl_v1/Kconfig
+#	modified:   drivers/video/msm/mhl_v1/Makefile
+#	modified:   drivers/video/msm/mhl_v1/SiI9234_I2C_master.c
+#	modified:   drivers/video/msm/mhl_v1/SiI9234_I2C_master.h
+#	modified:   drivers/video/msm/mhl_v1/SiI9234_I2C_slave_add.h
+#	modified:   drivers/video/msm/mhl_v1/SiI9234_Reg.h
+#	modified:   drivers/video/msm/mhl_v1/si_RegioCbus.c
+#	modified:   drivers/video/msm/mhl_v1/si_RegioCbus.h
+#	modified:   drivers/video/msm/mhl_v1/si_apiCbus.c
+#	modified:   drivers/video/msm/mhl_v1/si_apiCbus.h
+#	modified:   drivers/video/msm/mhl_v1/si_cbus.h
+#	modified:   drivers/video/msm/mhl_v1/si_cbusDefs.h
+#	modified:   drivers/video/msm/mhl_v1/si_cbus_regs.h
+#	modified:   drivers/video/msm/mhl_v1/si_cpCbus.c
+#	modified:   drivers/video/msm/mhl_v1/si_cpCbus.h
+#	modified:   drivers/video/msm/mhl_v1/sii9234.c
+#	modified:   drivers/video/msm/mhl_v1/sii9234_driver.c
+#	modified:   drivers/video/msm/mhl_v1/sii9234_driver.h
+#	modified:   drivers/video/msm/mhl_v2/Kconfig
+#	modified:   drivers/video/msm/mhl_v2/Makefile
+#	modified:   drivers/video/msm/mhl_v2/sii9234_driver.h
+#	modified:   drivers/video/msm/mipi_boeot_tft_video_wsvga_pt.c
+#	new file:   drivers/video/msm/mipi_chimei_wuxga.c
+#	modified:   drivers/video/msm/mipi_magna_oled_video_qhd_pt.c
+#	new file:   drivers/video/msm/mipi_magna_oled_video_wvga_pt.c
+#	modified:   drivers/video/msm/mipi_novatek.h
+#	modified:   drivers/video/msm/mipi_novatek_boe_hydis_cmd_wvga_pt.c
+#	modified:   drivers/video/msm/mipi_novatek_cmd_wvga_pt.c
+#	modified:   drivers/video/msm/mipi_samsung_esd_refresh.c
+#	modified:   drivers/video/msm/mipi_samsung_esd_refresh.h
+#	modified:   drivers/video/msm/mipi_samsung_oled.h
+#	modified:   drivers/video/msm/mipi_samsung_oled_cmd_qhd_pt.c
+#	modified:   drivers/video/msm/mipi_samsung_tft_video_wxga_pt.c
+#	modified:   drivers/video/msm/mipi_tc358764_dsi2lvds.c
+#	modified:   drivers/video/msm/mipi_tc358764_dsi2lvds.h
+#	modified:   drivers/video/msm/msm_dss_io_8960.c
+#	modified:   drivers/video/msm/msm_dss_io_8x60.c
+#	modified:   drivers/video/msm/samsung_cmc624.c
+#	renamed:    drivers/video/msm/smart_mtp_ea8960.c -> drivers/video/msm/smart_mtp_ea8868.c
+#	renamed:    drivers/video/msm/smart_mtp_ea8960.h -> drivers/video/msm/smart_mtp_ea8868.h
+#	modified:   drivers/video/msm/smart_mtp_s6e63m0.c
+#	modified:   drivers/video/msm/smart_mtp_s6e63m0.h
+#	modified:   drivers/video/msm/smart_mtp_s6e8aa0x01.c
+#	modified:   drivers/video/msm/smart_mtp_s6e8aa0x01.h
+#	modified:   drivers/video/msm/vidc/1080p/ddl/vcd_ddl_properties.c
+#	modified:   drivers/video/msm/vidc/1080p/resource_tracker/vcd_res_tracker.h
+#	modified:   drivers/video/msm/vidc/720p/ddl/vcd_ddl.c
+#	modified:   drivers/video/msm/vidc/720p/ddl/vcd_ddl.h
+#	modified:   drivers/video/msm/vidc/720p/ddl/vcd_ddl_utils.c
+#	modified:   drivers/video/msm/vidc/720p/resource_tracker/vcd_res_tracker.c
+#	modified:   drivers/video/msm/vidc/720p/resource_tracker/vcd_res_tracker.h
+#	modified:   drivers/video/msm/vidc/common/init/vidc_init_internal.h
+#	modified:   drivers/video/msm/vidc/common/vcd/vcd_api.c
+#	modified:   drivers/video/msm/vidc/common/vcd/vcd_client_sm.c
+#	modified:   drivers/video/msm/vidc/common/vcd/vcd_device_sm.c
+#	modified:   drivers/video/msm/vidc/common/vcd/vcd_power_sm.c
+#	modified:   drivers/video/msm/vidc/common/vcd/vcd_scheduler.c
+#	modified:   fs/fuse/dev.c
+#	modified:   fs/jbd2/checkpoint.c
+#	modified:   include/linux/battery/fuelgauge/max17048_fuelgauge.h
+#	modified:   include/linux/battery/fuelgauge/max17050_fuelgauge.h
+#	modified:   include/linux/battery/sec_battery.h
+#	modified:   include/linux/battery/sec_charger.h
+#	modified:   include/linux/battery/sec_charging_common.h
+#	modified:   include/linux/battery/sec_fuelgauge.h
+#	new file:   include/linux/bh1721fvc.h
+#	modified:   include/linux/charging_temperature_data.h
+#	modified:   include/linux/diagchar.h
+#	modified:   include/linux/earlysuspend.h
+#	modified:   include/linux/host_notify.h
+#	modified:   include/linux/i2c/ak8975.h
+#	modified:   include/linux/i2c/cypress_touchkey.h
+#	modified:   include/linux/i2c/fsa9485.h
+#	modified:   include/linux/i2c/gp2a.h
+#	modified:   include/linux/i2c/gp2ap020.h
+#	modified:   include/linux/i2c/mxt224e.h
+#	new file:   include/linux/i2c/mxt224s.h
+#	modified:   include/linux/i2c/taos.h
+#	modified:   include/linux/input.h
+#	modified:   include/linux/input/bmp180.h
+#	modified:   include/linux/input/mxt224.h
+#	new file:   include/linux/leds-max77693.h
+#	modified:   include/linux/libra_sdioif.h
+#	modified:   include/linux/max17040_battery.h
+#	new file:   include/linux/mfd/max77693-private.h
+#	new file:   include/linux/mfd/max77693.h
+#	modified:   include/linux/mfd/pm8xxx/pm8921-bms.h
+#	modified:   include/linux/mfd/pm8xxx/pm8921-sec-charger.h
+#	modified:   include/linux/mfd/wcd9310/core.h
+#	modified:   include/linux/mmc/card.h
+#	modified:   include/linux/mmc/sdio_func.h
+#	modified:   include/linux/mpu.h
+#	modified:   include/linux/mpu6050b1.h
+#	modified:   include/linux/mpu6x.h
+#	modified:   include/linux/msm_audio.h
+#	modified:   include/linux/msm_ipc.h
+#	modified:   include/linux/nl80211.h
+#	modified:   include/linux/platform_data/mms_ts.h
+#	new file:   include/linux/platform_data/synaptics_s7301.h
+#	modified:   include/linux/pn544.h
+#	new file:   include/linux/power/max17047_fuelgauge.h
+#	new file:   include/linux/power/max77693_battery.h
+#	modified:   include/linux/power_supply.h
+#	modified:   include/linux/printk.h
+#	modified:   include/linux/sec_battery.h
+#	modified:   include/linux/sec_jack.h
+#	modified:   include/linux/sec_param.h
+#	modified:   include/linux/sec_tablet_conn.h
+#	modified:   include/linux/sii9234.h
+#	modified:   include/linux/sii9234_rcp.h
+#	modified:   include/linux/smb347_charger.h
+#	modified:   include/linux/stmpe811.h
+#	new file:   include/linux/sw_sync.h
+#	new file:   include/linux/sync.h
+#	modified:   include/linux/wakelock.h
+#	modified:   include/linux/yas.h
+#	modified:   include/media/msm_camera.h
+#	modified:   include/media/tavarua.h
+#	modified:   include/net/bluetooth/hci_mgmt.h
+#	modified:   include/net/bluetooth/rfcomm.h
+#	modified:   include/net/cfg80211.h
+#	modified:   include/net/ip6_fib.h
+#	modified:   include/sound/Kbuild
+#	modified:   include/sound/a2220.h
+#	modified:   include/sound/apr_audio.h
+#	modified:   include/sound/q6asm.h
+#	modified:   include/sound/soc.h
+#	modified:   kernel/power/fbearlysuspend.c
+#	modified:   kernel/printk.c
+#	modified:   net/bluetooth/hci_event.c
+#	modified:   net/bluetooth/l2cap_core.c
+#	modified:   net/bluetooth/mgmt.c
+#	modified:   net/bluetooth_mgmt/af_bluetooth.c
+#	modified:   net/bluetooth_mgmt/hci_conn.c
+#	modified:   net/bluetooth_mgmt/hci_core.c
+#	modified:   net/bluetooth_mgmt/hci_event.c
+#	modified:   net/bluetooth_mgmt/l2cap_core.c
+#	modified:   net/bluetooth_mgmt/mgmt.c
+#	modified:   net/bluetooth_mgmt/rfcomm/core.c
+#	modified:   net/bluetooth_mgmt/smp.c
+#	modified:   net/core/skbuff.c
+#	modified:   net/ipv4/netfilter/nf_nat_core.c
+#	modified:   net/netfilter/nf_conntrack_core.c
+#	modified:   net/netfilter/xt_qtaguid.c
+#	modified:   net/wireless/nl80211.c
+#	modified:   net/wireless/reg.c
+#	modified:   scripts/gcc-wrapper.py
+#	modified:   sound/core/pcm_lib.c
+#	modified:   sound/core/pcm_native.c
+#	modified:   sound/soc/codecs/wcd9310.c
+#	modified:   sound/soc/codecs/wcd9310.h
+#	modified:   sound/soc/msm/Makefile
+#	modified:   sound/soc/msm/msm-multi-ch-pcm-q6.c
+#	modified:   sound/soc/msm/msm-pcm-afe.h
+#	modified:   sound/soc/msm/msm-pcm-lpa.c
+#	modified:   sound/soc/msm/msm-pcm-q6.c
+#	modified:   sound/soc/msm/msm8960-d2.c
+#	modified:   sound/soc/msm/msm8960-jaguar.c
+#	modified:   sound/soc/msm/qdsp6/q6asm.c
+#	modified:   sound/soc/msm/qdsp6/q6voice.h
+#	modified:   sound/soc/soc-core.c
+#	modified:   sound/soc/soc-dsp.c
+#
+# Unmerged paths:
+#   (use "git reset HEAD <file>..." to unstage)
+#   (use "git add/rm <file>..." as appropriate to mark resolution)
+#
+#	both modified:      arch/arm/mach-msm/include/mach/iommu_domains.h
+#	both modified:      arch/arm/mach-msm/iommu_domains.c
+#	both modified:      arch/arm/mach-msm/memory.c
+#	both modified:      arch/arm/mach-msm/peripheral-loader.c
+#	both added:         arch/arm/mach-msm/pil-vidc.c
+#	both modified:      arch/arm/mach-msm/sec_debug.c
+#	both modified:      arch/arm/mach-msm/subsystem_restart.c
+#	both modified:      drivers/base/genlock.c
+#	both modified:      drivers/char/msm_rotator.c
+#	both modified:      drivers/cpufreq/cpufreq.c
+#	both modified:      drivers/cpufreq/cpufreq_interactive.c
+#	both modified:      drivers/gpu/ion/ion_carveout_heap.c
+#	both modified:      drivers/gpu/ion/ion_cp_heap.c
+#	both modified:      drivers/gpu/ion/ion_priv.h
+#	both modified:      drivers/gpu/msm/adreno.c
+#	both modified:      drivers/gpu/msm/adreno.h
+#	both modified:      drivers/gpu/msm/adreno_a2xx.c
+#	both modified:      drivers/gpu/msm/adreno_debugfs.c
+#	both modified:      drivers/gpu/msm/adreno_debugfs.h
+#	both modified:      drivers/gpu/msm/adreno_drawctxt.c
+#	both modified:      drivers/gpu/msm/adreno_pm4types.h
+#	both modified:      drivers/gpu/msm/adreno_ringbuffer.c
+#	both modified:      drivers/gpu/msm/adreno_ringbuffer.h
+#	both modified:      drivers/gpu/msm/kgsl.c
+#	both modified:      drivers/gpu/msm/kgsl.h
+#	both modified:      drivers/gpu/msm/kgsl_gpummu.c
+#	both modified:      drivers/gpu/msm/kgsl_iommu.c
+#	both modified:      drivers/gpu/msm/kgsl_mmu.c
+#	both modified:      drivers/gpu/msm/kgsl_mmu.h
+#	both modified:      drivers/gpu/msm/kgsl_pwrctrl.c
+#	both modified:      drivers/gpu/msm/kgsl_sharedmem.c
+#	both modified:      drivers/gpu/msm/kgsl_sharedmem.h
+#	both modified:      drivers/gpu/msm/z180.c
+#	both modified:      drivers/i2c/algos/i2c-algo-bit.c
+#	both modified:      drivers/input/touchscreen/mxt224e.c
+#	both modified:      drivers/leds/leds-pm8xxx.c
+#	both modified:      drivers/media/video/msm/Kconfig
+#	both modified:      drivers/media/video/msm/wfd/enc-subdev.c
+#	both modified:      drivers/media/video/msm/wfd/wfd-ioctl.c
+#	both modified:      drivers/media/video/msm_zsl/gemini/msm_gemini_core.c
+#	both modified:      drivers/media/video/msm_zsl/gemini/msm_gemini_hw.h
+#	both modified:      drivers/media/video/msm_zsl/gemini/msm_gemini_platform.c
+#	both modified:      drivers/media/video/msm_zsl/gemini/msm_gemini_platform.h
+#	both modified:      drivers/media/video/msm_zsl/gemini/msm_gemini_sync.c
+#	both modified:      drivers/media/video/msm_zsl/msm.c
+#	both modified:      drivers/media/video/msm_zsl/msm_mctl_pp.c
+#	both modified:      drivers/media/video/msm_zsl/msm_mem.c
+#	both modified:      drivers/media/video/msm_zsl/sensors/s5c73m3.c
+#	deleted by them:    drivers/media/video/msm_zsl/wfd/enc-subdev.c
+#	both modified:      drivers/media/video/videobuf2-msm-mem.c
+#	both modified:      drivers/mmc/card/block.c
+#	both modified:      drivers/net/tun.c
+#	both modified:      drivers/net/wireless/bcmdhd/Makefile
+#	both modified:      drivers/net/wireless/bcmdhd/bcmsdh_linux.c
+#	both modified:      drivers/net/wireless/bcmdhd/bcmsdh_sdmmc.c
+#	both modified:      drivers/net/wireless/bcmdhd/bcmsdh_sdmmc_linux.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd.h
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_cdc.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_cfg80211.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_common.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_custom_sec.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_linux.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_sdio.c
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_sec_feature.h
+#	both modified:      drivers/net/wireless/bcmdhd/dhd_wlfc.h
+#	both modified:      drivers/net/wireless/bcmdhd/include/epivers.h
+#	both modified:      drivers/net/wireless/bcmdhd/wl_android.c
+#	both modified:      drivers/net/wireless/bcmdhd/wl_cfg80211.c
+#	both modified:      drivers/net/wireless/bcmdhd/wl_cfg80211.h
+#	both modified:      drivers/net/wireless/bcmdhd/wl_cfgp2p.c
+#	both modified:      drivers/net/wireless/bcmdhd/wldev_common.c
+#	both modified:      drivers/staging/android/lowmemorykiller.c
+#	both added:         drivers/usb/gadget/f_audio_source.c
+#	both modified:      drivers/usb/host/xhci-pci.c
+#	both modified:      drivers/usb/host/xhci.h
+#	both modified:      drivers/usb/serial/ftdi_sio_ids.h
+#	both modified:      drivers/usb/serial/qcserial.c
+#	both modified:      drivers/video/msm/hdmi_msm.c
+#	both modified:      drivers/video/msm/mdp.c
+#	both modified:      drivers/video/msm/mdp.h
+#	both modified:      drivers/video/msm/mdp4.h
+#	both modified:      drivers/video/msm/mdp4_dtv.c
+#	both modified:      drivers/video/msm/mdp4_overlay.c
+#	both modified:      drivers/video/msm/mdp4_overlay_atv.c
+#	both modified:      drivers/video/msm/mdp4_overlay_dsi_cmd.c
+#	both modified:      drivers/video/msm/mdp4_overlay_dsi_video.c
+#	both modified:      drivers/video/msm/mdp4_overlay_dtv.c
+#	both modified:      drivers/video/msm/mdp4_overlay_lcdc.c
+#	both modified:      drivers/video/msm/mdp4_overlay_mddi.c
+#	both modified:      drivers/video/msm/mdp4_overlay_writeback.c
+#	both modified:      drivers/video/msm/mdp4_util.c
+#	both modified:      drivers/video/msm/mdp_dma.c
+#	both modified:      drivers/video/msm/mdp_dma_dsi_video.c
+#	both modified:      drivers/video/msm/mdp_dma_lcdc.c
+#	both modified:      drivers/video/msm/mdp_ppp.c
+#	both modified:      drivers/video/msm/mhl_v2/sii9234.c
+#	both modified:      drivers/video/msm/mipi_dsi.c
+#	both modified:      drivers/video/msm/mipi_dsi.h
+#	both modified:      drivers/video/msm/mipi_dsi_host.c
+#	both modified:      drivers/video/msm/mipi_novatek.c
+#	both modified:      drivers/video/msm/mipi_samsung_oled.c
+#	both modified:      drivers/video/msm/mipi_samsung_oled_video_hd_pt.c
+#	both modified:      drivers/video/msm/mipi_samsung_oled_video_wvga_pt.c
+#	both modified:      drivers/video/msm/msm_fb.c
+#	both modified:      drivers/video/msm/msm_fb.h
+#	both modified:      drivers/video/msm/vidc/1080p/resource_tracker/vcd_res_tracker.c
+#	both modified:      drivers/video/msm/vidc/1080p/resource_tracker/vcd_res_tracker_api.h
+#	both modified:      drivers/video/msm/vidc/common/dec/vdec.c
+#	both modified:      drivers/video/msm/vidc/common/enc/venc_internal.c
+#	both modified:      drivers/video/msm/vidc/common/init/vidc_init.c
+#	both modified:      drivers/video/msm/vidc/common/vcd/vcd_sub.c
+#	both modified:      fs/buffer.c
+#	both modified:      include/linux/msm_mdp.h
+#	both added:         include/trace/events/cpufreq_interactive.h
+#	both modified:      mm/compaction.c
+#	both modified:      mm/page_alloc.c
+#	both modified:      mm/vmscan.c
+#	both modified:      net/ipv6/route.c
+#	both modified:      net/netfilter/xt_IDLETIMER.c
+#	both modified:      sound/soc/msm/msm-pcm-afe.c
+#	both modified:      sound/soc/msm/msm-pcm-routing.c
+#

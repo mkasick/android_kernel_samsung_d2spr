@@ -1,0 +1,33 @@
+git clone 'https://github.com/CyanogenMod/android_kernel_samsung_d2.git' -b jellybean d2
+cd d2
+git fetch 'https://github.com/mkasick/android_kernel_samsung_d2spr.git' jb_merge_ls
+git merge --squash -X ignore-space-change FETCH_HEAD
+
+# Stuff.
+
+git commit -m 'Merge jb_merge_ls (LJ7 + 3.0.48).'
+
+---------------------------------------------------------------------------
+
+Auto-merge conflicts:
+- Drop file mode changes from 755 to 644.
+- Drop all ext4 debugging:
+  - fs/ext4/{dir.c,ext4.h,ialloc.c,inode.c,mballoc.c,namei.c,super.c}
+- Drop arch/arm/mach-msm/acpuclock-8960.c changes:
+  - acpu_freq_tbl_8960_kraitv2_f3 tables
+  - Alternate implementation of boost_uv (boost_vdd_core, which is cumulative!)
+- Mismerge in drivers/media/video/msm_zsl/msm_vfe32.c:
+  - Reapply "msm: camera: Fix IRQ handling in vfe32"
+    (Ie1fabea93ef0d0eff4aaa0cd29fae47b81dbc6ed).
+- Drop duplicated changes:
+  - drivers/usb/core/hub.c
+  - drivers/usb/gadget/android.c
+  - drivers/video/msm/Kconfig
+  - drivers/video/msm/Makefile
+  - sound/soc/msm/qdsp6/q6voice.c
+- Drop arch/arm/mach-msm/devices-iommu.c changes.
+
+TODO bam_dmux:
+- Add CONFIG_DMUX_LA1_5 to defconfigs.
+- Determine which of CONFIG_DMUX_LA1_5 or CONFIG_MSM_BAM_DMUX_D2USC is
+  needed on any/all devices.
