@@ -1330,7 +1330,11 @@ static long venc_set_max_perf_level(struct video_client_ctx *client_ctx,
 	perf.level = level;
 	rc = vcd_set_property(client_ctx->vcd_handle,
 				&vcd_property_hdr, &perf);
+<<<<<<< HEAD
 	err_set_perf_level:				
+=======
+err_set_perf_level:				
+>>>>>>> FETCH_HEAD
 	return rc;
 }
 static long venc_set_header_mode(struct video_client_ctx *client_ctx,
@@ -1902,7 +1906,7 @@ flush_failed:
 
 static long venc_free_input_buffer(struct v4l2_subdev *sd, void *arg)
 {
-	int rc = 0;
+	int del_rc = 0, free_rc = 0;
 	struct venc_inst *inst = sd->dev_priv;
 	struct video_client_ctx *client_ctx = &inst->venc_client;
 	if (!client_ctx) {

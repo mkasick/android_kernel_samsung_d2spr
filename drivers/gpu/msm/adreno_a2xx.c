@@ -1449,19 +1449,30 @@ done:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void a2xx_drawctxt_workaround(struct adreno_device *adreno_dev,
+=======
+static void a2xx_drawctxt_draw_workaround(struct adreno_device *adreno_dev,
+>>>>>>> FETCH_HEAD
 						struct adreno_context *context)
 {
 	struct kgsl_device *device = &adreno_dev->dev;
 	unsigned int cmd[11];
 	unsigned int *cmds = &cmd[0];
 
+<<<<<<< HEAD
 	if (adreno_is_a225(adreno_dev)) {
 		adreno_dev->gpudev->ctx_switches_since_last_draw++;
 		/* If there have been > than
 		 * ADRENO_NUM_CTX_SWITCH_ALLOWED_BEFORE_DRAW calls to context
 		 * switches w/o gmem being saved then we need to execute
 		 * this workaround */
+=======
+	adreno_dev->gpudev->ctx_switches_since_last_draw++;
+	/* If there have been > than ADRENO_NUM_CTX_SWITCH_ALLOWED_BEFORE_DRAW
+	 * calls to context switches w/o gmem being saved then we need to
+	 * execute this workaround */
+>>>>>>> FETCH_HEAD
 		if (adreno_dev->gpudev->ctx_switches_since_last_draw >
 				ADRENO_NUM_CTX_SWITCH_ALLOWED_BEFORE_DRAW)
 			adreno_dev->gpudev->ctx_switches_since_last_draw = 0;
@@ -1486,6 +1497,7 @@ static void a2xx_drawctxt_workaround(struct adreno_device *adreno_dev,
 		*cmds++ = 0;
 		*cmds++ = cp_type3_packet(CP_WAIT_FOR_IDLE, 1);
 		*cmds++ = 0x00000000;
+<<<<<<< HEAD
 	} else {
 		/* On Adreno 20x/220, if the events for shader space reuse
 		 * gets dropped, the CP block would wait indefinitely.
@@ -1499,6 +1511,12 @@ static void a2xx_drawctxt_workaround(struct adreno_device *adreno_dev,
 
 	adreno_ringbuffer_issuecmds(device, context, KGSL_CMD_FLAGS_PMODE,
 				    &cmd[0], cmds - cmd);
+=======
+
+	adreno_ringbuffer_issuecmds(device, context,
+				    KGSL_CMD_FLAGS_PMODE,
+				    &cmd[0], 11);
+>>>>>>> FETCH_HEAD
 }
 
 static void a2xx_drawctxt_save(struct adreno_device *adreno_dev,
@@ -1556,8 +1574,13 @@ static void a2xx_drawctxt_save(struct adreno_device *adreno_dev,
 		adreno_dev->gpudev->ctx_switches_since_last_draw = 0;
 
 		context->flags |= CTXT_FLAGS_GMEM_RESTORE;
+<<<<<<< HEAD
 	} else if (adreno_is_a2xx(adreno_dev))
 		a2xx_drawctxt_workaround(adreno_dev, context);
+=======
+	} else if (adreno_is_a225(adreno_dev))
+		a2xx_drawctxt_draw_workaround(adreno_dev, context);
+>>>>>>> FETCH_HEAD
 }
 
 static void a2xx_drawctxt_restore(struct adreno_device *adreno_dev,
@@ -1568,7 +1591,11 @@ static void a2xx_drawctxt_restore(struct adreno_device *adreno_dev,
 
 	if (context == NULL) {
 		/* No context - set the default apgetable and thats it */
+<<<<<<< HEAD
 		kgsl_mmu_setstate(&device->mmu, device->mmu.defaultpagetable,
+=======
+		kgsl_mmu_setstate(device, device->mmu.defaultpagetable,
+>>>>>>> FETCH_HEAD
 				adreno_dev->drawctxt_active->id);
 		return;
 	}
@@ -1579,11 +1606,19 @@ static void a2xx_drawctxt_restore(struct adreno_device *adreno_dev,
 	cmds[1] = KGSL_CONTEXT_TO_MEM_IDENTIFIER;
 	cmds[2] = cp_type3_packet(CP_MEM_WRITE, 2);
 	cmds[3] = device->memstore.gpuaddr +
+<<<<<<< HEAD
 		KGSL_MEMSTORE_OFFSET(KGSL_MEMSTORE_GLOBAL, current_context);
 	cmds[4] = context->id;
 	adreno_ringbuffer_issuecmds(device, context, KGSL_CMD_FLAGS_NONE,
 					cmds, 5);
 	kgsl_mmu_setstate(&device->mmu, context->pagetable, context->id);
+=======
+		KGSL_DEVICE_MEMSTORE_OFFSET(current_context);
+	cmds[4] = (unsigned int) context;
+	adreno_ringbuffer_issuecmds(device, context, KGSL_CMD_FLAGS_NONE,
+					cmds, 5);
+	kgsl_mmu_setstate(device, context->pagetable, context->id);
+>>>>>>> FETCH_HEAD
 
 #ifndef CONFIG_MSM_KGSL_CFF_DUMP_NO_CONTEXT_MEM_DUMP
 	kgsl_cffdump_syncmem(NULL, &context->gpustate,
@@ -2026,7 +2061,11 @@ struct adreno_gpudev adreno_a2xx_gpudev = {
 	.ctxt_create = a2xx_drawctxt_create,
 	.ctxt_save = a2xx_drawctxt_save,
 	.ctxt_restore = a2xx_drawctxt_restore,
+<<<<<<< HEAD
 	.ctxt_draw_workaround = a2xx_drawctxt_workaround,
+=======
+	.ctxt_draw_workaround = a2xx_drawctxt_draw_workaround,
+>>>>>>> FETCH_HEAD
 	.irq_handler = a2xx_irq_handler,
 	.irq_control = a2xx_irq_control,
 	.snapshot = a2xx_snapshot,

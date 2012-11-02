@@ -28,6 +28,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ * This is Modified by Samsung Electronics
+ * Taewan Kim <taewan95.kim@samsung.com>
+ *
  */
 
 #include <linux/module.h>
@@ -41,7 +44,17 @@
 #include <linux/notifier.h>
 #include <linux/compaction.h>
 
+<<<<<<< HEAD
 static uint32_t lowmem_debug_level = 1;
+=======
+#define ENHANCED_LMK_ROUTINE
+
+#ifdef ENHANCED_LMK_ROUTINE
+#define LOWMEM_DEATHPENDING_DEPTH 3
+#endif
+
+static uint32_t lowmem_debug_level = 2;
+>>>>>>> FETCH_HEAD
 static int lowmem_adj[6] = {
 	0,
 	1,
@@ -57,6 +70,17 @@ static int lowmem_minfree[6] = {
 };
 static int lowmem_minfree_size = 4;
 
+<<<<<<< HEAD
+=======
+static unsigned int offlining;
+#ifdef ENHANCED_LMK_ROUTINE
+static struct task_struct *lowmem_deathpending[LOWMEM_DEATHPENDING_DEPTH] = {
+	NULL,
+};
+#else
+static struct task_struct *lowmem_deathpending;
+#endif
+>>>>>>> FETCH_HEAD
 static unsigned long lowmem_deathpending_timeout;
 
 extern int compact_nodes();
@@ -67,20 +91,130 @@ extern int compact_nodes();
 			printk(x);			\
 	} while (0)
 
+<<<<<<< HEAD
 static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 {
 	struct task_struct *tsk;
+=======
+static int
+task_notify_func(struct notifier_block *self, unsigned long val, void *data);
+
+static struct notifier_block task_nb = {
+	.notifier_call	= task_notify_func,
+};
+
+static int
+task_notify_func(struct notifier_block *self, unsigned long val, void *data)
+{
+	struct task_struct *task = data;
+#ifdef ENHANCED_LMK_ROUTINE
+	int i = 0;
+
+	for (i = 0; i < LOWMEM_DEATHPENDING_DEPTH; i++)
+		if (task == lowmem_deathpending[i]) {
+			lowmem_deathpending[i] = NULL;
+			break;
+		}
+#else
+	if (task == lowmem_deathpending)
+		lowmem_deathpending = NULL;
+#endif
+
+	return NOTIFY_OK;
+}
+
+#ifdef CONFIG_MEMORY_HOTPLUG
+static int lmk_hotplug_callback(struct notifier_block *self,
+				unsigned long cmd, void *data)
+{
+	switch (cmd) {
+	/* Don't care LMK cases */
+	case MEM_ONLINE:
+	case MEM_OFFLINE:
+	case MEM_CANCEL_ONLINE:
+	case MEM_CANCEL_OFFLINE:
+	case MEM_GOING_ONLINE:
+		offlining = 0;
+		lowmem_print(4, "lmk in normal mode\n");
+		break;
+	/* LMK should account for movable zone */
+	case MEM_GOING_OFFLINE:
+		offlining = 1;
+		lowmem_print(4, "lmk in hotplug mode\n");
+		break;
+	}
+	return NOTIFY_DONE;
+}
+#endif
+
+
+
+static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
+{
+	struct task_struct *p;
+#ifdef ENHANCED_LMK_ROUTINE
+	struct task_struct *selected[LOWMEM_DEATHPENDING_DEPTH] = {NULL,};
+#else
+>>>>>>> FETCH_HEAD
 	struct task_struct *selected = NULL;
+#endif
 	int rem = 0;
 	int tasksize;
 	int i;
+<<<<<<< HEAD
 	int min_score_adj = OOM_SCORE_ADJ_MAX + 1;
 	int selected_tasksize = 0;
 	int selected_oom_score_adj;
+=======
+	int min_adj = OOM_ADJUST_MAX + 1;
+#ifdef ENHANCED_LMK_ROUTINE
+	int selected_tasksize[LOWMEM_DEATHPENDING_DEPTH] = {0,};
+	int selected_oom_adj[LOWMEM_DEATHPENDING_DEPTH] = {OOM_ADJUST_MAX,};
+	int all_selected_oom = 0;
+#else
+	int selected_tasksize = 0;
+	int selected_oom_adj;
+#endif
+>>>>>>> FETCH_HEAD
 	int array_size = ARRAY_SIZE(lowmem_adj);
 	int other_free = global_page_state(NR_FREE_PAGES) - totalreserve_pages;
 	int other_file = global_page_state(NR_FILE_PAGES) -
 						global_page_state(NR_SHMEM);
+<<<<<<< HEAD
+=======
+	struct zone *zone;
+
+	if (offlining) {
+		/* Discount all free space in the section being offlined */
+		for_each_zone(zone) {
+			 if (zone_idx(zone) == ZONE_MOVABLE) {
+				other_free -= zone_page_state(zone,
+						NR_FREE_PAGES);
+				lowmem_print(4, "lowmem_shrink discounted "
+					"%lu pages in movable zone\n",
+					zone_page_state(zone, NR_FREE_PAGES));
+			}
+		}
+	}
+	/*
+	 * If we already have a death outstanding, then
+	 * bail out right away; indicating to vmscan
+	 * that we have nothing further to offer on
+	 * this pass.
+	 *
+	 */
+#ifdef ENHANCED_LMK_ROUTINE
+	for (i = 0; i < LOWMEM_DEATHPENDING_DEPTH; i++) {
+		if (lowmem_deathpending[i] &&
+	    time_before_eq(jiffies, lowmem_deathpending_timeout))
+			return 0;
+	}
+#else
+	if (lowmem_deathpending &&
+	    time_before_eq(jiffies, lowmem_deathpending_timeout))
+		return 0;
+#endif
+>>>>>>> FETCH_HEAD
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
@@ -101,12 +235,26 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		global_page_state(NR_ACTIVE_FILE) +
 		global_page_state(NR_INACTIVE_ANON) +
 		global_page_state(NR_INACTIVE_FILE);
+<<<<<<< HEAD
 	if (sc->nr_to_scan <= 0 || min_score_adj == OOM_SCORE_ADJ_MAX + 1) {
+=======
+	if (sc->nr_to_scan <= 0 || min_adj == OOM_ADJUST_MAX + 1) {
+>>>>>>> FETCH_HEAD
 		lowmem_print(5, "lowmem_shrink %lu, %x, return %d\n",
 			     sc->nr_to_scan, sc->gfp_mask, rem);
 		return rem;
 	}
+<<<<<<< HEAD
 	selected_oom_score_adj = min_score_adj;
+=======
+
+#ifdef ENHANCED_LMK_ROUTINE
+	for (i = 0; i < LOWMEM_DEATHPENDING_DEPTH; i++)
+		selected_oom_adj[i] = min_adj;
+#else
+	selected_oom_adj = min_adj;
+#endif
+>>>>>>> FETCH_HEAD
 
 	rcu_read_lock();
 	for_each_process(tsk) {
@@ -135,6 +283,31 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		task_unlock(p);
 		if (tasksize <= 0)
 			continue;
+
+#ifdef ENHANCED_LMK_ROUTINE
+		for (i = 0; i < LOWMEM_DEATHPENDING_DEPTH; i++) {
+			if (all_selected_oom >= LOWMEM_DEATHPENDING_DEPTH) {
+				if (oom_adj < selected_oom_adj[i])
+					continue;
+				if (oom_adj == selected_oom_adj[i] &&
+					tasksize <= selected_tasksize[i])
+					continue;
+			} else if (selected[i])
+				continue;
+
+			selected[i] = p;
+			selected_tasksize[i] = tasksize;
+			selected_oom_adj[i] = oom_adj;
+
+			if (all_selected_oom < LOWMEM_DEATHPENDING_DEPTH)
+				all_selected_oom++;
+			lowmem_print(2, "select %d (%s), adj %d, size %d,"
+			     "to kill\n",
+			     p->pid, p->comm, oom_adj, tasksize);
+
+			break;
+		}
+#else
 		if (selected) {
 			if (oom_score_adj < selected_oom_score_adj)
 				continue;
@@ -146,8 +319,28 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		selected_tasksize = tasksize;
 		selected_oom_score_adj = oom_score_adj;
 		lowmem_print(2, "select %d (%s), adj %d, size %d, to kill\n",
+<<<<<<< HEAD
 			     p->pid, p->comm, oom_score_adj, tasksize);
+=======
+			     p->pid, p->comm, oom_adj, tasksize);
+
+#endif
 	}
+#ifdef ENHANCED_LMK_ROUTINE
+	for (i = 0; i < LOWMEM_DEATHPENDING_DEPTH; i++) {
+		if (selected[i]) {
+			lowmem_print(1, "send sigkill to %d (%s), adj %d,"
+				     "size %d\n",
+				     selected[i]->pid, selected[i]->comm,
+				     selected_oom_adj[i], selected_tasksize[i]);
+			lowmem_deathpending[i] = selected[i];
+			lowmem_deathpending_timeout = jiffies + HZ;
+			force_sig(SIGKILL, selected[i]);
+			rem -= selected_tasksize[i];
+>>>>>>> FETCH_HEAD
+	}
+	}
+#else
 	if (selected) {
 		lowmem_print(1, "send sigkill to %d (%s), adj %d, size %d\n",
 			     selected->pid, selected->comm,
@@ -157,6 +350,10 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		set_tsk_thread_flag(selected, TIF_MEMDIE);
 		rem -= selected_tasksize;
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> FETCH_HEAD
 	lowmem_print(4, "lowmem_shrink %lu, %x, return %d\n",
 		     sc->nr_to_scan, sc->gfp_mask, rem);
 	rcu_read_unlock();

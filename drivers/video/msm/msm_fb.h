@@ -23,6 +23,7 @@
 #include "linux/proc_fs.h"
 
 #include <mach/hardware.h>
+#include <mach/msm_subsystem_map.h>
 #include <linux/io.h>
 #include <mach/board.h>
 
@@ -175,14 +176,19 @@ struct msm_fb_data_type {
 	struct list_head writeback_register_queue;
 	wait_queue_head_t wait_q;
 	struct ion_client *iclient;
+<<<<<<< HEAD
 	unsigned long display_iova;
 	unsigned long rotator_iova;
+=======
+	struct msm_mapped_buffer *map_buffer;
+>>>>>>> FETCH_HEAD
 	struct mdp_buf_type *ov0_wb_buf;
 	struct mdp_buf_type *ov1_wb_buf;
 	u32 ov_start;
 	u32 mem_hid;
 	u32 mdp_rev;
 	u32 writeback_state;
+	bool writeback_active_cnt;
 	boolean resume_state;
 	boolean backlight_ctrl_ongoing;
 	bool writeback_active_cnt;
@@ -213,10 +219,17 @@ void msm_fb_config_backlight(struct msm_fb_data_type *mfd);
 extern int poweroff_charging;
 void fill_black_screen(void);
 void unfill_black_screen(void);
+int msm_fb_check_frame_rate(struct msm_fb_data_type *mfd,
+				struct fb_info *info);
+
 extern boolean mdp4_overlay_used(void);
 #ifdef CONFIG_FB_MSM_LOGO
 #define INIT_IMAGE_FILE "/initlogo.rle"
+<<<<<<< HEAD
 int load_565rle_image(char *filename, bool bf_supported);
+=======
+extern int load_565rle_image(char *filename, bool bf_supported);
+>>>>>>> FETCH_HEAD
 extern int draw_rgb888_screen(void);
 #endif
 int msm_fb_check_frame_rate(struct msm_fb_data_type *mfd,

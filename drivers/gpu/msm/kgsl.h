@@ -25,6 +25,7 @@
 
 #define KGSL_NAME "kgsl"
 
+<<<<<<< HEAD
 /* The number of memstore arrays limits the number of contexts allowed.
  * If more contexts are needed, update multiple for MEMSTORE_SIZE
  */
@@ -33,6 +34,8 @@
 #define KGSL_MEMSTORE_MAX	(KGSL_MEMSTORE_SIZE / \
 		sizeof(struct kgsl_devmemstore) - 1)
 
+=======
+>>>>>>> FETCH_HEAD
 /* Timestamp window used to detect rollovers (half of integer range) */
 #define KGSL_TIMESTAMP_WINDOW 0x80000000
 
@@ -158,7 +161,11 @@ struct kgsl_mem_entry {
 	int flags;
 	void *priv_data;
 	struct rb_node node;
+<<<<<<< HEAD
 	unsigned int context_id;
+=======
+	uint32_t free_timestamp;
+>>>>>>> FETCH_HEAD
 	/* back pointer to private structure under whose context this
 	* allocation is made */
 	struct kgsl_process_private *priv;

@@ -93,7 +93,10 @@ struct ion_cp_heap {
 	int iommu_map_all;
 	int iommu_2x_map_domain;
 	unsigned int has_outer_cache;
+<<<<<<< HEAD
 	atomic_t protect_cnt;
+=======
+>>>>>>> FETCH_HEAD
 };
 
 enum {
@@ -263,6 +266,9 @@ ion_phys_addr_t ion_cp_allocate(struct ion_heap *heap,
 
 		return ION_CP_ALLOCATE_FAIL;
 	}
+
+	printk(KERN_WARNING "heap %s allocated %lx (total allocated_bytes %lx)\n",
+		heap->name, size, cp_heap->allocated_bytes);
 
 	return offset;
 }
@@ -703,6 +709,7 @@ static int iommu_map_all(unsigned long domain_num, struct ion_cp_heap *cp_heap,
 	}
 	if (!ret_value && domain) {
 		unsigned long temp_phys = cp_heap->base;
+<<<<<<< HEAD
 		unsigned long temp_iova;
 
 		ret_value = msm_allocate_iova_address(domain_num, partition,
@@ -712,6 +719,15 @@ static int iommu_map_all(unsigned long domain_num, struct ion_cp_heap *cp_heap,
 		if (ret_value) {
 			pr_err("%s: could not allocate iova from domain %lu, partition %d\n",
 				__func__, domain_num, partition);
+=======
+		unsigned long temp_iova =
+				msm_allocate_iova_address(domain_num, partition,
+						virt_addr_len, SZ_64K);
+		if (!temp_iova) {
+			pr_err("%s: could not allocate iova from domain %lu, partition %d\n",
+				__func__, domain_num, partition);
+			ret_value = -ENOMEM;
+>>>>>>> FETCH_HEAD
 			goto out;
 		}
 		cp_heap->iommu_iova[domain_num] = temp_iova;
@@ -800,12 +816,22 @@ static int ion_cp_heap_map_iommu(struct ion_buffer *buffer,
 
 	extra = iova_length - buffer->size;
 
+<<<<<<< HEAD
 	ret = msm_allocate_iova_address(domain_num, partition_num,
 						data->mapped_size, align,
 						&data->iova_addr);
 
 	if (ret)
 		goto out;
+=======
+	data->iova_addr = msm_allocate_iova_address(domain_num, partition_num,
+						data->mapped_size, align);
+
+	if (!data->iova_addr) {
+		ret = -ENOMEM;
+		goto out;
+	}
+>>>>>>> FETCH_HEAD
 
 	domain = msm_get_iommu_domain(domain_num);
 
@@ -932,7 +958,10 @@ struct ion_heap *ion_cp_heap_create(struct ion_platform_heap *heap_data)
 	cp_heap->secure_base = cp_heap->base;
 	cp_heap->secure_size = heap_data->size;
 	cp_heap->has_outer_cache = heap_data->has_outer_cache;
+<<<<<<< HEAD
 	atomic_set(&cp_heap->protect_cnt, 0);
+=======
+>>>>>>> FETCH_HEAD
 	if (heap_data->extra_data) {
 		struct ion_cp_heap_pdata *extra_data =
 				heap_data->extra_data;

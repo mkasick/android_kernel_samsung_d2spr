@@ -171,9 +171,15 @@ enum {
 	CLK_SUSPEND,
 };
 
+<<<<<<< HEAD
 int msm_rotator_iommu_map_buf(int mem_id, int domain,
 	unsigned long *start, unsigned long *len,
 	struct ion_handle **pihdl, unsigned int secure)
+=======
+int msm_rotator_iommu_map_buf(int mem_id, unsigned char src,
+	unsigned long *start, unsigned long *len,
+	struct ion_handle **pihdl)
+>>>>>>> FETCH_HEAD
 {
 	if (!msm_rotator_dev->client)
 		return -EINVAL;
@@ -186,6 +192,7 @@ int msm_rotator_iommu_map_buf(int mem_id, int domain,
 	pr_debug("%s(): ion_hdl %p, ion_buf %p\n", __func__, *pihdl,
 		ion_share(msm_rotator_dev->client, *pihdl));
 
+<<<<<<< HEAD
 	if (rot_iommu_split_domain) {
 		if (secure) {
 			if (ion_phys(msm_rotator_dev->client,
@@ -212,6 +219,14 @@ int msm_rotator_iommu_map_buf(int mem_id, int domain,
 			return -EINVAL;
 		}
 	}
+=======
+	if (ion_map_iommu(msm_rotator_dev->client,
+		*pihdl,	ROTATOR_DOMAIN, GEN_POOL,
+		SZ_4K, 0, start, len, 0, ION_IOMMU_UNMAP_DELAYED)) {
+		pr_err("ion_map_iommu() failed\n");
+		return -EINVAL;
+	}
+>>>>>>> FETCH_HEAD
 
 	pr_debug("%s(): mem_id %d, start 0x%lx, len 0x%lx\n",
 		__func__, mem_id, *start, *len);
@@ -304,8 +319,17 @@ static void disable_rot_clks(void)
 		clk_disable_unprepare(msm_rotator_dev->core_clk);
 	if (msm_rotator_dev->pclk != NULL)
 		clk_disable_unprepare(msm_rotator_dev->pclk);
+<<<<<<< HEAD
 	if (msm_rotator_dev->regulator)
 		regulator_disable(msm_rotator_dev->regulator);
+=======
+	if (msm_rotator_dev->regulator) {
+		ret = regulator_disable(msm_rotator_dev->regulator);
+		if (ret)
+			pr_err("%s : Failed msm_rotator_dev regulator disable.\n",
+				__func__);
+	}
+>>>>>>> FETCH_HEAD
 }
 
 static void msm_rotator_rot_clk_work_f(struct work_struct *work)
@@ -832,9 +856,15 @@ static int msm_rotator_rgb_types(struct msm_rotator_img_info *info,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int get_img(struct msmfb_data *fbd, int domain,
 	unsigned long *start, unsigned long *len, struct file **p_file,
 	int *p_need, struct ion_handle **p_ihdl, unsigned int secure)
+=======
+static int get_img(struct msmfb_data *fbd, unsigned char src,
+	unsigned long *start, unsigned long *len, struct file **p_file,
+	int *p_need, struct ion_handle **p_ihdl)
+>>>>>>> FETCH_HEAD
 {
 	int ret = 0;
 #ifdef CONFIG_FB
@@ -876,8 +906,13 @@ static int get_img(struct msmfb_data *fbd, int domain,
 #endif
 
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+<<<<<<< HEAD
 	return msm_rotator_iommu_map_buf(fbd->memory_id, domain, start,
 		len, p_ihdl, secure);
+=======
+	return msm_rotator_iommu_map_buf(fbd->memory_id, src, start,
+		len, p_ihdl);
+>>>>>>> FETCH_HEAD
 #endif
 #ifdef CONFIG_ANDROID_PMEM
 	if (!get_pmem_file(fbd->memory_id, start, &vstart, len, p_file))
@@ -899,6 +934,7 @@ static void put_img(struct file *p_file, struct ion_handle *p_ihdl,
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 	if (!IS_ERR_OR_NULL(p_ihdl)) {
 		pr_debug("%s(): p_ihdl %p\n", __func__, p_ihdl);
+<<<<<<< HEAD
 		if (rot_iommu_split_domain) {
 			if (!secure)
 				ion_unmap_iommu(msm_rotator_dev->client,
@@ -907,6 +943,10 @@ static void put_img(struct file *p_file, struct ion_handle *p_ihdl,
 			ion_unmap_iommu(msm_rotator_dev->client,
 				p_ihdl, ROTATOR_SRC_DOMAIN, GEN_POOL);
 		}
+=======
+		ion_unmap_iommu(msm_rotator_dev->client,
+			p_ihdl, ROTATOR_DOMAIN, GEN_POOL);
+>>>>>>> FETCH_HEAD
 
 		ion_free(msm_rotator_dev->client, p_ihdl);
 	}
@@ -973,18 +1013,30 @@ static int msm_rotator_do_rotate(unsigned long arg)
 		goto do_rotate_unlock_mutex;
 	}
 
+<<<<<<< HEAD
 	rc = get_img(&info.src, ROTATOR_SRC_DOMAIN, (unsigned long *)&in_paddr,
 			(unsigned long *)&src_len, &srcp0_file, &ps0_need,
 			&srcp0_ihdl, 0);
+=======
+	rc = get_img(&info.src, 1, (unsigned long *)&in_paddr,
+			(unsigned long *)&src_len, &srcp0_file, &ps0_need,
+			&srcp0_ihdl);
+>>>>>>> FETCH_HEAD
 	if (rc) {
 		pr_err("%s: in get_img() failed id=0x%08x\n",
 			DRIVER_NAME, info.src.memory_id);
 		goto do_rotate_unlock_mutex;
 	}
 
+<<<<<<< HEAD
 	rc = get_img(&info.dst, ROTATOR_DST_DOMAIN, (unsigned long *)&out_paddr,
 			(unsigned long *)&dst_len, &dstp0_file, &p_need,
 			&dstp0_ihdl, img_info->secure);
+=======
+	rc = get_img(&info.dst, 0, (unsigned long *)&out_paddr,
+			(unsigned long *)&dst_len, &dstp0_file, &p_need,
+			&dstp0_ihdl);
+>>>>>>> FETCH_HEAD
 	if (rc) {
 		pr_err("%s: out get_img() failed id=0x%08x\n",
 		       DRIVER_NAME, info.dst.memory_id);
@@ -1012,7 +1064,11 @@ static int msm_rotator_do_rotate(unsigned long arg)
 			goto do_rotate_unlock_mutex;
 		}
 
+<<<<<<< HEAD
 		rc = get_img(&info.src_chroma, ROTATOR_SRC_DOMAIN,
+=======
+		rc = get_img(&info.src_chroma, 1,
+>>>>>>> FETCH_HEAD
 				(unsigned long *)&in_chroma_paddr,
 				(unsigned long *)&src_len, &srcp1_file, &p_need,
 				&srcp1_ihdl, 0);
@@ -1022,7 +1078,11 @@ static int msm_rotator_do_rotate(unsigned long arg)
 			goto do_rotate_unlock_mutex;
 		}
 
+<<<<<<< HEAD
 		rc = get_img(&info.dst_chroma, ROTATOR_DST_DOMAIN,
+=======
+		rc = get_img(&info.dst_chroma, 0,
+>>>>>>> FETCH_HEAD
 				(unsigned long *)&out_chroma_paddr,
 				(unsigned long *)&dst_len, &dstp1_file, &p_need,
 				&dstp1_ihdl, img_info->secure);

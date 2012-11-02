@@ -27,6 +27,13 @@ struct msm_gemini_hw_buf {
 	uint32_t cbcr_buffer_addr;
 	uint32_t cbcr_len;
 	uint32_t num_of_mcu_rows;
+<<<<<<< HEAD
+=======
+#if !defined(CONFIG_MSM_IOMMU)
+	struct msm_mapped_buffer *msm_buffer;
+	int *subsystem_id;
+#endif
+>>>>>>> FETCH_HEAD
 	struct ion_handle *handle;
 };
 

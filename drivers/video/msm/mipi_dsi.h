@@ -128,10 +128,15 @@ enum dsi_trigger_type {
 #define DSI_CMD_TRIGGER_SW_SEOF		0x05	/* cmd dma only */
 #define DSI_CMD_TRIGGER_SW_TE		0x06
 #define MIPI_DSI_TX_TIMEOUT_MS	(HZ * 40/1000)/*40ms*/
+#define MIPI_DSI_TX_REF_MS	17
 
 extern struct device dsi_dev;
 extern int mipi_dsi_clk_on;
+<<<<<<< HEAD
 extern int dsi_irq;
+=======
+extern u32 dsi_irq;
+>>>>>>> FETCH_HEAD
 extern u32 esc_byte_ratio;
 
 extern void  __iomem *periph_base;
@@ -285,6 +290,15 @@ struct dcs_cmd_list {
 	struct dcs_cmd_req list[CMD_REQ_MAX];
 };
 
+<<<<<<< HEAD
+=======
+struct mdp4_overlay_perf {
+	u32 mdp_clk_rate;
+	u32 use_ov0_blt;
+	u32 use_ov1_blt;
+	u32 mdp_bw;
+};
+>>>>>>> FETCH_HEAD
 
 char *mipi_dsi_buf_reserve_hdr(struct dsi_buf *dp, int hlen);
 char *mipi_dsi_buf_init(struct dsi_buf *dp);

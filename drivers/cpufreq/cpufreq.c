@@ -189,8 +189,28 @@ static void __cpufreq_cpu_put(struct cpufreq_policy *data, int sysfs)
 		kobject_put(&data->kobj);
 	module_put(cpufreq_driver->owner);
 }
+<<<<<<< HEAD
 
 void cpufreq_cpu_put(struct cpufreq_policy *data)
+=======
+
+void cpufreq_cpu_put(struct cpufreq_policy *data)
+{
+	__cpufreq_cpu_put(data, 0);
+}
+EXPORT_SYMBOL_GPL(cpufreq_cpu_put);
+
+static void cpufreq_cpu_put_sysfs(struct cpufreq_policy *data)
+{
+	__cpufreq_cpu_put(data, 1);
+}
+
+#ifdef __CPUFREQ_KOBJ_DEL_DEADLOCK_FIX
+/* just peek to see if the cpufreq policy is available.
+ * The caller must hold cpufreq_driver_lock
+ */
+struct cpufreq_policy *cpufreq_cpu_peek(unsigned int cpu)
+>>>>>>> FETCH_HEAD
 {
 	__cpufreq_cpu_put(data, 0);
 }
@@ -707,6 +727,30 @@ static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 	struct cpufreq_policy *policy = to_policy(kobj);
 	struct freq_attr *fattr = to_attr(attr);
 	ssize_t ret = -EINVAL;
+<<<<<<< HEAD
+=======
+#ifdef __CPUFREQ_KOBJ_DEL_DEADLOCK_FIX
+	unsigned int cpu;
+	unsigned long flags;
+#endif
+
+#ifdef __CPUFREQ_KOBJ_DEL_DEADLOCK_FIX
+	spin_lock_irqsave(&cpufreq_driver_lock, flags);
+	policy = cpufreq_cpu_peek(policy->cpu);
+	if (!policy) {
+		spin_unlock_irqrestore(&cpufreq_driver_lock, flags);
+		return -EINVAL;
+	}
+	cpu = policy->cpu;
+	if (mutex_trylock(&per_cpu(cpufreq_remove_mutex, cpu)) == 0) {
+		spin_unlock_irqrestore(&cpufreq_driver_lock, flags);
+		pr_info("!WARN %s failed because cpu%u is going down\n",
+			__func__, cpu);
+		return -EINVAL;
+	}
+	spin_unlock_irqrestore(&cpufreq_driver_lock, flags);
+#endif
+>>>>>>> FETCH_HEAD
 	policy = cpufreq_cpu_get_sysfs(policy->cpu);
 	if (!policy)
 		goto no_policy;
@@ -732,6 +776,30 @@ static ssize_t store(struct kobject *kobj, struct attribute *attr,
 	struct cpufreq_policy *policy = to_policy(kobj);
 	struct freq_attr *fattr = to_attr(attr);
 	ssize_t ret = -EINVAL;
+<<<<<<< HEAD
+=======
+#ifdef __CPUFREQ_KOBJ_DEL_DEADLOCK_FIX
+	unsigned int cpu;
+	unsigned long flags;
+#endif
+
+#ifdef __CPUFREQ_KOBJ_DEL_DEADLOCK_FIX
+	spin_lock_irqsave(&cpufreq_driver_lock, flags);
+	policy = cpufreq_cpu_peek(policy->cpu);
+	if (!policy) {
+		spin_unlock_irqrestore(&cpufreq_driver_lock, flags);
+		return -EINVAL;
+	}
+	cpu = policy->cpu;
+	if (mutex_trylock(&per_cpu(cpufreq_remove_mutex, cpu)) == 0) {
+		spin_unlock_irqrestore(&cpufreq_driver_lock, flags);
+		pr_info("!WARN %s failed because cpu%u is going down\n",
+			__func__, cpu);
+		return -EINVAL;
+	}
+	spin_unlock_irqrestore(&cpufreq_driver_lock, flags);
+#endif
+>>>>>>> FETCH_HEAD
 	policy = cpufreq_cpu_get_sysfs(policy->cpu);
 	if (!policy)
 		goto no_policy;

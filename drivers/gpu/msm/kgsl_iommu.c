@@ -573,6 +573,7 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 /*
  * kgsl_iommu_pt_get_base_addr - Get the address of the pagetable that the
  * IOMMU ttbr0 register is programmed with
@@ -582,6 +583,11 @@ err:
  * with
  */
 static unsigned int kgsl_iommu_pt_get_base_addr(struct kgsl_pagetable *pt)
+=======
+static void kgsl_iommu_setstate(struct kgsl_device *device,
+				struct kgsl_pagetable *pagetable,
+				unsigned int context_id)
+>>>>>>> FETCH_HEAD
 {
 	struct kgsl_iommu_pt *iommu_pt = pt->priv;
 	return iommu_get_pt_base_addr(iommu_pt->domain);
@@ -887,8 +893,13 @@ kgsl_iommu_map(void *mmu_specific_pt,
 
 	iommu_virt_addr = memdesc->gpuaddr;
 
+<<<<<<< HEAD
 	ret = iommu_map_range(iommu_pt->domain, iommu_virt_addr, memdesc->sg,
 				size, (IOMMU_READ | IOMMU_WRITE));
+=======
+	ret = iommu_map_range(domain, iommu_virt_addr, memdesc->sg,
+				memdesc->size, (IOMMU_READ | IOMMU_WRITE));
+>>>>>>> FETCH_HEAD
 	if (ret) {
 		KGSL_CORE_ERR("iommu_map_range(%p, %x, %p, %d, %d) "
 				"failed with err: %d\n", iommu_pt->domain,

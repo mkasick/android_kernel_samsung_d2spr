@@ -1317,6 +1317,10 @@ struct xhci_hcd {
 #define XHCI_AMD_0x96_HOST	(1 << 9)
 #define XHCI_TRUST_TX_LENGTH	(1 << 10)
 #define XHCI_SPURIOUS_REBOOT	(1 << 13)
+<<<<<<< HEAD
+=======
+#define XHCI_AVOID_BEI		(1 << 15)
+>>>>>>> FETCH_HEAD
 	unsigned int		num_active_eps;
 	unsigned int		limit_active_eps;
 	/* There are two roothubs to keep track of bus suspend info for */

@@ -114,7 +114,10 @@ int mdp_dsi_video_on(struct platform_device *pdev)
 	var = &fbi->var;
 
 	vsync_cntrl.dev = mfd->fbi->dev;
+<<<<<<< HEAD
 	atomic_set(&vsync_cntrl.suspend, 0);
+=======
+>>>>>>> FETCH_HEAD
 	bpp = fbi->var.bits_per_pixel / 8;
 	buf = (uint8 *) fbi->fix.smem_start;
 
@@ -286,6 +289,7 @@ int mdp_dsi_video_off(struct platform_device *pdev)
 
 void mdp_dma_video_vsync_ctrl(int enable)
 {
+<<<<<<< HEAD
 	unsigned long flag;
 	int disabled_clocks;
 	if (vsync_cntrl.vsync_irq_enabled == enable)
@@ -313,6 +317,20 @@ void mdp_dma_video_vsync_ctrl(int enable)
 	if (vsync_cntrl.vsync_irq_enabled &&
 		atomic_read(&vsync_cntrl.suspend) == 0)
 		atomic_set(&vsync_cntrl.vsync_resume, 1);
+=======
+	if (vsync_cntrl.vsync_irq_enabled == enable)
+		return;
+
+	vsync_cntrl.vsync_irq_enabled = enable;
+
+	if (enable) {
+		mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
+		mdp3_vsync_irq_enable(LCDC_FRAME_START, MDP_VSYNC_TERM);
+	} else {
+		mdp3_vsync_irq_disable(LCDC_FRAME_START, MDP_VSYNC_TERM);
+		mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
+	}
+>>>>>>> FETCH_HEAD
 }
 
 void mdp_dsi_video_update(struct msm_fb_data_type *mfd)

@@ -544,6 +544,7 @@ void mdp_dma2_update(struct msm_fb_data_type *mfd)
 
 void mdp_dma_vsync_ctrl(int enable)
 {
+<<<<<<< HEAD
 	unsigned long flag;
 	int disabled_clocks;
 	if (vsync_cntrl.vsync_irq_enabled == enable)
@@ -576,6 +577,21 @@ void mdp_dma_vsync_ctrl(int enable)
 	if (vsync_cntrl.vsync_irq_enabled &&
 		atomic_read(&vsync_cntrl.suspend) == 0)
 		atomic_set(&vsync_cntrl.vsync_resume, 1);
+=======
+	if (vsync_cntrl.vsync_irq_enabled == enable)
+		return;
+
+	vsync_cntrl.vsync_irq_enabled = enable;
+
+	if (enable) {
+		mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
+		MDP_OUTP(MDP_BASE + 0x021c, 0x10); /* read pointer */
+		mdp3_vsync_irq_enable(MDP_PRIM_RDPTR, MDP_VSYNC_TERM);
+	} else {
+		mdp3_vsync_irq_disable(MDP_PRIM_RDPTR, MDP_VSYNC_TERM);
+		mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
+	}
+>>>>>>> FETCH_HEAD
 }
 
 void mdp_lcd_update_workqueue_handler(struct work_struct *work)
@@ -598,9 +614,14 @@ void mdp_set_dma_pan_info(struct fb_info *info, struct mdp_dirty_region *dirty,
 	down(&mfd->sem);
 
 	iBuf = &mfd->ibuf;
+<<<<<<< HEAD
 
 	if (mfd->display_iova)
 		iBuf->buf = (uint8 *)mfd->display_iova;
+=======
+	if (mfd->map_buffer)
+		iBuf->buf = (uint8 *)mfd->map_buffer->iova[0];
+>>>>>>> FETCH_HEAD
 	else
 		iBuf->buf = (uint8 *) info->fix.smem_start;
 

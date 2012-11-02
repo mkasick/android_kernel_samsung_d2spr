@@ -30,8 +30,13 @@
 #define KGSL_CMD_FLAGS_NO_TS_CMP	0x00000002
 
 /* Command identifiers */
+<<<<<<< HEAD
 #define KGSL_CONTEXT_TO_MEM_IDENTIFIER	0x2EADBEEF
 #define KGSL_CMD_IDENTIFIER		0x2EEDFACE
+=======
+#define KGSL_CONTEXT_TO_MEM_IDENTIFIER	0xDEADBEEF
+#define KGSL_CMD_IDENTIFIER		0xFEEDFACE
+>>>>>>> FETCH_HEAD
 #define KGSL_START_OF_IB_IDENTIFIER	0x2EADEABE
 #define KGSL_END_OF_IB_IDENTIFIER	0x2ABEDEAD
 
@@ -44,6 +49,8 @@
 #endif
 
 #define ADRENO_ISTORE_START 0x5000 /* Istore offset */
+
+#define ADRENO_NUM_CTX_SWITCH_ALLOWED_BEFORE_DRAW	50
 
 #define ADRENO_NUM_CTX_SWITCH_ALLOWED_BEFORE_DRAW	50
 
@@ -79,6 +86,7 @@ struct adreno_device {
 	unsigned int wait_timeout;
 	unsigned int istore_size;
 	unsigned int pix_shader_start;
+<<<<<<< HEAD
 	unsigned int instruction_size;
 	unsigned int ib_check_level;
 	unsigned int fast_hang_detect;
@@ -101,12 +109,48 @@ struct adreno_gpudev {
 	void (*ctxt_restore)(struct adreno_device *, struct adreno_context *);
 	void (*ctxt_draw_workaround)(struct adreno_device *,
 					struct adreno_context *);
+=======
+	unsigned int ib_check_level;
+};
+
+struct adreno_gpudev {
+	/* keeps track of when we need to execute the draw workaround code */
+	int ctx_switches_since_last_draw;
+	int (*ctxt_create)(struct adreno_device *, struct adreno_context *);
+	void (*ctxt_save)(struct adreno_device *, struct adreno_context *);
+	void (*ctxt_restore)(struct adreno_device *, struct adreno_context *);
+	void (*ctxt_draw_workaround)(struct adreno_device *, struct adreno_context *);
+>>>>>>> FETCH_HEAD
 	irqreturn_t (*irq_handler)(struct adreno_device *);
 	void (*irq_control)(struct adreno_device *, int);
 	void * (*snapshot)(struct adreno_device *, void *, int *, int);
 	void (*rb_init)(struct adreno_device *, struct adreno_ringbuffer *);
 	void (*start)(struct adreno_device *);
 	unsigned int (*busy_cycles)(struct adreno_device *);
+};
+
+/*
+ * struct adreno_recovery_data - Structure that contains all information to
+ * perform gpu recovery from hangs
+ * @ib1 - IB1 that the GPU was executing when hang happened
+ * @context_id - Context which caused the hang
+ * @global_eop - eoptimestamp at time of hang
+ * @rb_buffer - Buffer that holds the commands from good contexts
+ * @rb_size - Number of valid dwords in rb_buffer
+ * @bad_rb_buffer - Buffer that holds commands from the hanging context
+ * bad_rb_size - Number of valid dwords in bad_rb_buffer
+ * @last_valid_ctx_id - The last context from which commands were placed in
+ * ringbuffer before the GPU hung
+ */
+struct adreno_recovery_data {
+	unsigned int ib1;
+	unsigned int context_id;
+	unsigned int global_eop;
+	unsigned int *rb_buffer;
+	unsigned int rb_size;
+	unsigned int *bad_rb_buffer;
+	unsigned int bad_rb_size;
+	unsigned int last_valid_ctx_id;
 };
 
 /*
@@ -174,9 +218,12 @@ void *adreno_snapshot(struct kgsl_device *device, void *snapshot, int *remain,
 
 int adreno_dump_and_recover(struct kgsl_device *device);
 
+<<<<<<< HEAD
 unsigned int adreno_hang_detect(struct kgsl_device *device,
 						unsigned int *prev_reg_val);
 
+=======
+>>>>>>> FETCH_HEAD
 static inline int adreno_is_a200(struct adreno_device *adreno_dev)
 {
 	return (adreno_dev->gpurev == ADRENO_REV_A200);

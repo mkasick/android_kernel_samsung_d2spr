@@ -187,6 +187,7 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
 	case 4:
 		/* Composite mode; don't bind to the QMI/net interface as that
 		 * gets handled by other drivers.
+<<<<<<< HEAD
 		 */
 
 		/* Gobi 1K USB layout:
@@ -202,6 +203,23 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
 		 * 3: NMEA
 		 */
 
+=======
+		 */
+
+		/* Gobi 1K USB layout:
+		 * 0: serial port (doesn't respond)
+		 * 1: serial port (doesn't respond)
+		 * 2: AT-capable modem port
+		 * 3: QMI/net
+		 *
+		 * Gobi 2K+ USB layout:
+		 * 0: QMI/net
+		 * 1: DM/DIAG (use libqcdm from ModemManager for communication)
+		 * 2: AT-capable modem port
+		 * 3: NMEA
+		 */
+
+>>>>>>> FETCH_HEAD
 		if (ifnum == 1 && !is_gobi1k) {
 			dbg("Gobi 2K+ DM/DIAG interface found");
 			retval = usb_set_interface(serial->dev, ifnum, 0);

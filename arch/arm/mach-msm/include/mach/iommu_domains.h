@@ -18,10 +18,15 @@
 enum {
 	VIDEO_DOMAIN,
 	CAMERA_DOMAIN,
+<<<<<<< HEAD
 	DISPLAY_READ_DOMAIN,
 	DISPLAY_WRITE_DOMAIN,
 	ROTATOR_SRC_DOMAIN,
 	ROTATOR_DST_DOMAIN,
+=======
+	DISPLAY_DOMAIN,
+	ROTATOR_DOMAIN,
+>>>>>>> FETCH_HEAD
 	MAX_DOMAINS
 };
 
@@ -29,11 +34,14 @@ enum {
 	VIDEO_FIRMWARE_POOL,
 	VIDEO_MAIN_POOL,
 	GEN_POOL,
+<<<<<<< HEAD
 };
 
 struct msm_iommu_domain_name {
 	char *name;
 	int domain;
+=======
+>>>>>>> FETCH_HEAD
 };
 
 struct msm_iommu_domain {
@@ -99,6 +107,7 @@ extern void msm_iommu_unmap_extra(struct iommu_domain *domain,
 						unsigned long size,
 						unsigned long page_size);
 
+<<<<<<< HEAD
 extern int msm_iommu_map_contig_buffer(unsigned long phys,
 				unsigned int domain_no,
 				unsigned int partition_no,
@@ -115,6 +124,8 @@ extern void msm_iommu_unmap_contig_buffer(unsigned long iova,
 
 extern int msm_register_domain(struct msm_iova_layout *layout);
 
+=======
+>>>>>>> FETCH_HEAD
 #else
 static inline struct iommu_domain
 	*msm_get_iommu_domain(int subsys_id) { return NULL; }
@@ -158,6 +169,7 @@ static inline int msm_iommu_map_contig_buffer(unsigned long phys,
 				unsigned int domain_no,
 				unsigned int partition_no,
 				unsigned long size,
+<<<<<<< HEAD
 				unsigned long align,
 				unsigned long cached,
 				unsigned long *iova_val)
@@ -175,8 +187,19 @@ static inline void msm_iommu_unmap_contig_buffer(unsigned long iova,
 }
 
 static inline int msm_register_domain(struct msm_iova_layout *layout)
+=======
+						unsigned long page_size,
+						int cached)
+>>>>>>> FETCH_HEAD
 {
 	return -ENODEV;
+}
+
+static inline void msm_iommu_unmap_extra(struct iommu_domain *domain,
+						unsigned long start_iova,
+						unsigned long size,
+						unsigned long page_size)
+{
 }
 #endif
 

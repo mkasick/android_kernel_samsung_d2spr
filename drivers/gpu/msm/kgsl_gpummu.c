@@ -21,7 +21,11 @@
 #include "kgsl_mmu.h"
 #include "kgsl_device.h"
 #include "kgsl_sharedmem.h"
+<<<<<<< HEAD
 #include "kgsl_trace.h"
+=======
+#include "a2xx_reg.h"
+>>>>>>> FETCH_HEAD
 
 #define KGSL_PAGETABLE_SIZE \
 	ALIGN(KGSL_PAGETABLE_ENTRIES(CONFIG_MSM_KGSL_PAGE_TABLE_SIZE) * \
@@ -398,7 +402,30 @@ kgsl_pt_map_get(struct kgsl_gpummu_pt *pt, uint32_t pte)
 	return baseptr[pte] & GSL_PT_PAGE_ADDR_MASK;
 }
 
+<<<<<<< HEAD
 static void kgsl_gpummu_pagefault(struct kgsl_mmu *mmu)
+=======
+static unsigned int kgsl_gpummu_pt_get_flags(struct kgsl_pagetable *pt,
+				enum kgsl_deviceid id)
+{
+	unsigned int result = 0;
+	struct kgsl_gpummu_pt *gpummu_pt;
+
+	if (pt == NULL)
+		return 0;
+	gpummu_pt = pt->priv;
+
+	spin_lock(&pt->lock);
+	if (gpummu_pt->tlb_flags & (1<<id)) {
+		result = KGSL_MMUFLAGS_TLBFLUSH;
+		gpummu_pt->tlb_flags &= ~(1<<id);
+	}
+	spin_unlock(&pt->lock);
+	return result;
+}
+
+static void kgsl_gpummu_pagefault(struct kgsl_device *device)
+>>>>>>> FETCH_HEAD
 {
 	unsigned int reg;
 	unsigned int ptbase;
@@ -406,6 +433,7 @@ static void kgsl_gpummu_pagefault(struct kgsl_mmu *mmu)
 	kgsl_regread(mmu->device, MH_MMU_PAGE_FAULT, &reg);
 	kgsl_regread(mmu->device, MH_MMU_PT_BASE, &ptbase);
 
+<<<<<<< HEAD
 	KGSL_MEM_CRIT(mmu->device,
 			"mmu page fault: page=0x%lx pt=%d op=%s axi=%d\n",
 			reg & ~(PAGE_SIZE - 1),
@@ -414,6 +442,44 @@ static void kgsl_gpummu_pagefault(struct kgsl_mmu *mmu)
 	trace_kgsl_mmu_pagefault(mmu->device, reg & ~(PAGE_SIZE - 1),
 			kgsl_mmu_get_ptname_from_ptbase(ptbase),
 			reg & 0x02 ? "WRITE" : "READ");
+=======
+	if (KGSL_DEVICE_3D0 == device->id) {
+		unsigned int ib1;
+		unsigned int ib1_sz;
+		unsigned int ib2;
+		unsigned int ib2_sz;
+		unsigned int rptr;
+		kgsl_regread(device, REG_CP_IB1_BASE, &ib1);
+		kgsl_regread(device, REG_CP_IB1_BUFSZ, &ib1_sz);
+		kgsl_regread(device, REG_CP_IB2_BASE, &ib2);
+		kgsl_regread(device, REG_CP_IB2_BUFSZ, &ib2_sz);
+		kgsl_regread(device, REG_CP_RB_RPTR, &rptr);
+
+		/* queue a work which will print the IB that caused the
+		 * pagefault, if we are in recovery then no need to q
+		 * work as the recovery routine will mess with the ringbuffer
+		 * contents and then the information will become stale
+		 * anyways */
+		if (!device->page_fault_ptbase &&
+			KGSL_STATE_DUMP_AND_RECOVER != device->state) {
+			device->page_fault_ptbase = ptbase;
+			device->page_fault_ib1 = ib1;
+			device->page_fault_rptr = rptr;
+
+			queue_work(device->work_queue,
+				&device->print_fault_ib);
+		}
+
+		KGSL_MEM_CRIT(device,
+			"mmu page fault: page=0x%lx pt=%d op=%s axi=%d "
+			"ptbase=0x%x IB1=0x%x IB1_SZ=0x%x "
+			"IB2=0x%x IB2_SZ=0x%x\n",
+			reg & ~(PAGE_SIZE - 1),
+			kgsl_mmu_get_ptname_from_ptbase(ptbase),
+			reg & 0x02 ? "WRITE" : "READ", (reg >> 4) & 0xF,
+			ptbase, ib1, ib1_sz, ib2, ib2_sz);
+	}
+>>>>>>> FETCH_HEAD
 }
 
 static void *kgsl_gpummu_create_pagetable(void)
@@ -484,7 +550,11 @@ static void kgsl_gpummu_default_setstate(struct kgsl_mmu *mmu,
 	}
 }
 
+<<<<<<< HEAD
 static void kgsl_gpummu_setstate(struct kgsl_mmu *mmu,
+=======
+static void kgsl_gpummu_setstate(struct kgsl_device *device,
+>>>>>>> FETCH_HEAD
 				struct kgsl_pagetable *pagetable,
 				unsigned int context_id)
 {
@@ -500,7 +570,12 @@ static void kgsl_gpummu_setstate(struct kgsl_mmu *mmu,
 			kgsl_mmu_pt_get_flags(pagetable, mmu->device->id);
 
 			/* call device specific set page table */
+<<<<<<< HEAD
 			kgsl_setstate(mmu, context_id, KGSL_MMUFLAGS_TLBFLUSH |
+=======
+			kgsl_setstate(mmu->device, context_id,
+				KGSL_MMUFLAGS_TLBFLUSH |
+>>>>>>> FETCH_HEAD
 				KGSL_MMUFLAGS_PTUPDATE);
 		}
 	}
@@ -584,7 +659,11 @@ static int kgsl_gpummu_start(struct kgsl_mmu *mmu)
 	kgsl_regwrite(mmu->device, MH_MMU_VA_RANGE,
 		      (KGSL_PAGETABLE_BASE |
 		      (CONFIG_MSM_KGSL_PAGE_TABLE_SIZE >> 16)));
+<<<<<<< HEAD
 	kgsl_setstate(mmu, KGSL_MEMSTORE_GLOBAL, KGSL_MMUFLAGS_TLBFLUSH);
+=======
+	kgsl_setstate(device, 0, KGSL_MMUFLAGS_TLBFLUSH);
+>>>>>>> FETCH_HEAD
 	mmu->flags |= KGSL_FLAGS_STARTED;
 
 	return 0;

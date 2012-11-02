@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -34,13 +34,6 @@
 #else
 #define D(fmt, args...) do {} while (0)
 #endif
-
-
-#define ERR_USER_COPY(to) pr_err("%s(%d): copy %s user\n", \
-				__func__, __LINE__, ((to) ? "to" : "from"))
-#define ERR_COPY_FROM_USER() ERR_USER_COPY(0)
-#define ERR_COPY_TO_USER() ERR_USER_COPY(1)
-
 
 #define PAD_TO_WORD(a)	  (((a) + 3) & ~3)
 
@@ -83,16 +76,16 @@ static int check_pmem_info(struct msm_pmem_info *info, int len)
 {
 	if (info->offset < len &&
 		info->offset + info->len <= len &&
-		info->y_off < len &&
-		info->cbcr_off < len)
+		info->planar0_off < len &&
+		info->planar1_off < len)
 		return 0;
 
 	pr_err("%s: check failed: off %d len %d y %d cbcr %d (total len %d)\n",
 						__func__,
 						info->offset,
 						info->len,
-						info->y_off,
-						info->cbcr_off,
+						info->planar0_off,
+						info->planar1_off,
 						len);
 	return -EINVAL;
 }
@@ -186,10 +179,17 @@ static int msm_pmem_table_add(struct hlist_head *ptype,
 
 	return 0;
 out3:
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 	ion_unmap_iommu(client, region->handle, CAMERA_DOMAIN, GEN_POOL);
 #endif
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+=======
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+	ion_unmap_iommu(client, region->handle, CAMERA_DOMAIN, GEN_POOL);
+#endif
+#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
+>>>>>>> FETCH_HEAD
 out2:
 	ion_free(client, region->handle);
 #elif CONFIG_ANDROID_PMEM
@@ -214,6 +214,7 @@ static int __msm_register_pmem(struct hlist_head *ptype,
 	case MSM_PMEM_CS:
 	case MSM_PMEM_IHIST:
 	case MSM_PMEM_SKIN:
+	case MSM_PMEM_AEC_AWB:
 		rc = msm_pmem_table_add(ptype, pinfo, client);
 		break;
 
@@ -240,6 +241,7 @@ static int __msm_pmem_table_del(struct hlist_head *ptype,
 	case MSM_PMEM_CS:
 	case MSM_PMEM_IHIST:
 	case MSM_PMEM_SKIN:
+	case MSM_PMEM_AEC_AWB:
 		hlist_for_each_entry_safe(region, node, n,
 				ptype, list) {
 

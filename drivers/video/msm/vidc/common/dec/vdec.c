@@ -890,7 +890,12 @@ static u32 vid_dec_set_h264_mv_buffers(struct video_client_ctx *client_ctx,
 				 __func__);
 			goto import_ion_error;
 		}
+<<<<<<< HEAD
 		if (res_trk_check_for_sec_session()) {
+=======
+		if (res_trk_check_for_sec_session() ||
+		   (res_trk_get_core_type() == (u32)VCD_CORE_720P)) {
+>>>>>>> FETCH_HEAD
 			rc = ion_phys(client_ctx->user_ion_client,
 				client_ctx->h264_mv_ion_handle,
 				(unsigned long *) (&(vcd_h264_mv_buffer->
@@ -1009,7 +1014,12 @@ static u32 vid_dec_free_h264_mv_buffers(struct video_client_ctx *client_ctx)
 	if (client_ctx->h264_mv_ion_handle != NULL) {
 		ion_unmap_kernel(client_ctx->user_ion_client,
 					client_ctx->h264_mv_ion_handle);
+<<<<<<< HEAD
 		if (!res_trk_check_for_sec_session()) {
+=======
+		if (!res_trk_check_for_sec_session() &&
+		   (res_trk_get_core_type() != (u32)VCD_CORE_720P)) {
+>>>>>>> FETCH_HEAD
 			ion_unmap_iommu(client_ctx->user_ion_client,
 				client_ctx->h264_mv_ion_handle,
 				VIDEO_DOMAIN,
@@ -2175,7 +2185,6 @@ static int vid_dec_open(struct inode *inode, struct file *file)
 static int vid_dec_release_secure(struct inode *inode, struct file *file)
 {
 	struct video_client_ctx *client_ctx = file->private_data;
-	enum buffer_dir dir_buffer;
 
 	INFO("msm_vidc_dec: Inside %s()", __func__);
 	vidc_cleanup_addr_table(client_ctx, BUFFER_TYPE_OUTPUT);
@@ -2192,7 +2201,6 @@ static int vid_dec_release_secure(struct inode *inode, struct file *file)
 static int vid_dec_release(struct inode *inode, struct file *file)
 {
 	struct video_client_ctx *client_ctx = file->private_data;
-	enum buffer_dir dir_buffer;
 
 	INFO("msm_vidc_dec: Inside %s()", __func__);
 	vidc_cleanup_addr_table(client_ctx, BUFFER_TYPE_OUTPUT);

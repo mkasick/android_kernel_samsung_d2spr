@@ -163,8 +163,12 @@ void mdp4_overlay_update_lcd(struct msm_fb_data_type *mfd)
 
 		MDP_OUTP(MDP_BASE + 0x00098, 0x01);
 		mdp4_init_writeback_buf(mfd, MDP4_MIXER0);
+<<<<<<< HEAD
 		pipe->ov_blt_addr = 0;
 		pipe->dma_blt_addr = 0;
+=======
+		pipe->blt_addr = 0;
+>>>>>>> FETCH_HEAD
 	} else {
 		pipe = mddi_pipe;
 	}
@@ -255,6 +259,7 @@ int mdp4_mddi_overlay_blt_start(struct msm_fb_data_type *mfd)
 	unsigned long flag;
 
 	pr_debug("%s: blt_end=%d blt_addr=%x pid=%d\n",
+<<<<<<< HEAD
 		__func__, mddi_pipe->blt_end,
 		(int)mddi_pipe->ov_blt_addr, current->pid);
 
@@ -266,14 +271,30 @@ int mdp4_mddi_overlay_blt_start(struct msm_fb_data_type *mfd)
 	}
 
 	if (mddi_pipe->ov_blt_addr == 0) {
+=======
+	__func__, mddi_pipe->blt_end, (int)mddi_pipe->blt_addr, current->pid);
+
+	mdp4_allocate_writeback_buf(mfd, MDP4_MIXER0);
+
+	if (mfd->ov0_wb_buf->phys_addr == 0) {
+		pr_info("%s: no blt_base assigned\n", __func__);
+		return -EBUSY;
+	}
+
+	if (mddi_pipe->blt_addr == 0) {
+>>>>>>> FETCH_HEAD
 		mdp4_mddi_dma_busy_wait(mfd);
 		spin_lock_irqsave(&mdp_spin_lock, flag);
 		mddi_pipe->blt_end = 0;
 		mddi_pipe->blt_cnt = 0;
 		mddi_pipe->ov_cnt = 0;
 		mddi_pipe->dmap_cnt = 0;
+<<<<<<< HEAD
 		mddi_pipe->ov_blt_addr = mfd->ov0_wb_buf->write_addr;
 		mddi_pipe->dma_blt_addr = mfd->ov0_wb_buf->write_addr;
+=======
+		mddi_pipe->blt_addr = mfd->ov0_wb_buf->phys_addr;
+>>>>>>> FETCH_HEAD
 		mdp4_stat.blt_mddi++;
 		spin_unlock_irqrestore(&mdp_spin_lock, flag);
 	return 0;
@@ -287,9 +308,15 @@ int mdp4_mddi_overlay_blt_stop(struct msm_fb_data_type *mfd)
 	unsigned long flag;
 
 	pr_debug("%s: blt_end=%d blt_addr=%x\n",
+<<<<<<< HEAD
 		 __func__, mddi_pipe->blt_end, (int)mddi_pipe->ov_blt_addr);
 
 	if ((mddi_pipe->blt_end == 0) && mddi_pipe->ov_blt_addr) {
+=======
+		 __func__, mddi_pipe->blt_end, (int)mddi_pipe->blt_addr);
+
+	if ((mddi_pipe->blt_end == 0) && mddi_pipe->blt_addr) {
+>>>>>>> FETCH_HEAD
 		spin_lock_irqsave(&mdp_spin_lock, flag);
 		mddi_pipe->blt_end = 1;	/* mark as end */
 		spin_unlock_irqrestore(&mdp_spin_lock, flag);
@@ -326,7 +353,11 @@ void mdp4_blt_xy_update(struct mdp4_overlay_pipe *pipe)
 	int bpp;
 	char *overlay_base;
 
+<<<<<<< HEAD
 	if (pipe->ov_blt_addr == 0)
+=======
+	if (pipe->blt_addr == 0)
+>>>>>>> FETCH_HEAD
 		return;
 
 
@@ -347,7 +378,11 @@ void mdp4_blt_xy_update(struct mdp4_overlay_pipe *pipe)
 	off = 0;
 	if (pipe->ov_cnt & 0x01)
 		off = pipe->src_height * pipe->src_width * bpp;
+<<<<<<< HEAD
 	addr2 = pipe->ov_blt_addr + off;
+=======
+	addr2 = pipe->blt_addr + off;
+>>>>>>> FETCH_HEAD
 	/* overlay 0 */
 	overlay_base = MDP_BASE + MDP4_OVERLAYPROC0_BASE;/* 0x10000 */
 	outpdw(overlay_base + 0x000c, addr2);
@@ -378,8 +413,12 @@ void mdp4_dma_p_done_mddi(struct mdp_dma_data *dma)
 
 		if (mddi_pipe->blt_end) {
 			mddi_pipe->blt_end = 0;
+<<<<<<< HEAD
 			mddi_pipe->ov_blt_addr = 0;
 			mddi_pipe->dma_blt_addr = 0;
+=======
+			mddi_pipe->blt_addr = 0;
+>>>>>>> FETCH_HEAD
 			pr_debug("%s: END, ov_cnt=%d dmap_cnt=%d\n", __func__,
 				mddi_pipe->ov_cnt, mddi_pipe->dmap_cnt);
 			mdp_intr_mask &= ~INTR_DMA_P_DONE;
@@ -414,7 +453,11 @@ void mdp4_overlay0_done_mddi(struct mdp_dma_data *dma)
 {
 	int diff;
 
+<<<<<<< HEAD
 	if (mddi_pipe->ov_blt_addr == 0) {
+=======
+	if (mddi_pipe->blt_addr == 0) {
+>>>>>>> FETCH_HEAD
 		mdp_pipe_ctrl(MDP_OVERLAY0_BLOCK, MDP_BLOCK_POWER_OFF, TRUE);
 		spin_lock(&mdp_spin_lock);
 		dma->busy = FALSE;
@@ -424,6 +467,7 @@ void mdp4_overlay0_done_mddi(struct mdp_dma_data *dma)
 		if (busy_wait_cnt)
 			busy_wait_cnt--;
 		mdp_disable_irq_nosync(MDP_OVERLAY0_TERM);
+<<<<<<< HEAD
 
 		return;
 	}
@@ -432,6 +476,16 @@ void mdp4_overlay0_done_mddi(struct mdp_dma_data *dma)
 	if (mddi_pipe->blt_end == 0)
 		mddi_pipe->ov_cnt++;
 
+=======
+
+		return;
+	}
+
+	/* blt enabled */
+	if (mddi_pipe->blt_end == 0)
+		mddi_pipe->ov_cnt++;
+
+>>>>>>> FETCH_HEAD
 	pr_debug("%s: ov_cnt=%d dmap_cnt=%d\n",
 			__func__, mddi_pipe->ov_cnt, mddi_pipe->dmap_cnt);
 
@@ -457,9 +511,15 @@ void mdp4_overlay0_done_mddi(struct mdp_dma_data *dma)
 
 	if (busy_wait_cnt)
 		busy_wait_cnt--;
+<<<<<<< HEAD
 
 	pr_debug("%s: kickoff dmap\n", __func__);
 
+=======
+
+	pr_debug("%s: kickoff dmap\n", __func__);
+
+>>>>>>> FETCH_HEAD
 	mdp4_blt_xy_update(mddi_pipe);
 	mdp_enable_irq(MDP_DMA2_TERM);	/* enable intr */
 	/* kick off dmap */
@@ -481,7 +541,11 @@ void mdp4_mddi_overlay_restore(void)
 		mdp4_mddi_dma_busy_wait(mddi_mfd);
 		mdp4_overlay_update_lcd(mddi_mfd);
 
+<<<<<<< HEAD
 		if (mddi_pipe->ov_blt_addr)
+=======
+		if (mddi_pipe->blt_addr)
+>>>>>>> FETCH_HEAD
 			mdp4_mddi_blt_dmap_busy_wait(mddi_mfd);
 		mdp4_mddi_overlay_kickoff(mddi_mfd, mddi_pipe);
 		mddi_mfd->dma_update_flag = 1;
@@ -547,17 +611,29 @@ void mdp4_mddi_kickoff_video(struct msm_fb_data_type *mfd,
 	 * to be called before kickoff.
 	 * vice versa for blt disabled.
 	 */
+<<<<<<< HEAD
 	if (mddi_pipe->ov_blt_addr && mddi_pipe->blt_cnt == 0)
 		mdp4_overlay_update_lcd(mfd); /* first time */
 	else if (mddi_pipe->ov_blt_addr == 0  && mddi_pipe->blt_cnt) {
+=======
+	if (mddi_pipe->blt_addr && mddi_pipe->blt_cnt == 0)
+		mdp4_overlay_update_lcd(mfd); /* first time */
+	else if (mddi_pipe->blt_addr == 0  && mddi_pipe->blt_cnt) {
+>>>>>>> FETCH_HEAD
 		mdp4_overlay_update_lcd(mfd); /* last time */
 		mddi_pipe->blt_cnt = 0;
 	}
 
 	pr_debug("%s: blt_addr=%d blt_cnt=%d\n",
+<<<<<<< HEAD
 		__func__, (int)mddi_pipe->ov_blt_addr, mddi_pipe->blt_cnt);
 
 	if (mddi_pipe->ov_blt_addr)
+=======
+		__func__, (int)mddi_pipe->blt_addr, mddi_pipe->blt_cnt);
+
+	if (mddi_pipe->blt_addr)
+>>>>>>> FETCH_HEAD
 		mdp4_mddi_blt_dmap_busy_wait(mddi_mfd);
 	mdp4_mddi_overlay_kickoff(mfd, pipe);
 }
@@ -578,7 +654,11 @@ void mdp4_mddi_overlay_kickoff(struct msm_fb_data_type *mfd,
 	mdp_enable_irq(MDP_OVERLAY0_TERM);
 	spin_lock_irqsave(&mdp_spin_lock, flag);
 	mfd->dma->busy = TRUE;
+<<<<<<< HEAD
 	if (mddi_pipe->ov_blt_addr)
+=======
+	if (mddi_pipe->blt_addr)
+>>>>>>> FETCH_HEAD
 		mfd->dma->dmap_busy = TRUE;
 	spin_unlock_irqrestore(&mdp_spin_lock, flag);
 	/* start OVERLAY pipe */
@@ -660,7 +740,11 @@ void mdp4_mddi_dma_s_kickoff(struct msm_fb_data_type *mfd,
 {
 	mdp_enable_irq(MDP_DMA_S_TERM);
 
+<<<<<<< HEAD
 	if (mddi_pipe->ov_blt_addr == 0)
+=======
+	if (mddi_pipe->blt_addr == 0)
+>>>>>>> FETCH_HEAD
 		mfd->dma->busy = TRUE;
 
 	mfd->ibuf_flushed = TRUE;
@@ -691,7 +775,11 @@ void mdp4_mddi_overlay(struct msm_fb_data_type *mfd)
 	if (mfd && mfd->panel_power_on) {
 		mdp4_mddi_dma_busy_wait(mfd);
 
+<<<<<<< HEAD
 		if (mddi_pipe && mddi_pipe->ov_blt_addr)
+=======
+		if (mddi_pipe && mddi_pipe->blt_addr)
+>>>>>>> FETCH_HEAD
 			mdp4_mddi_blt_dmap_busy_wait(mfd);
 		mdp4_overlay_mdp_perf_upd(mfd, 0);
 		mdp4_overlay_update_lcd(mfd);

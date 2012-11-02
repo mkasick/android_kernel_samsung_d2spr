@@ -23,8 +23,13 @@
 #include "a2xx_reg.h"
 
 unsigned int kgsl_cff_dump_enable;
+<<<<<<< HEAD
 int adreno_pm_regs_enabled;
 int adreno_pm_ib_enabled;
+=======
+int kgsl_pm_regs_enabled;
+int adreno_ib_dump_on_pagef_enabled;
+>>>>>>> FETCH_HEAD
 
 static struct dentry *pm_d_debugfs;
 
@@ -74,10 +79,28 @@ DEFINE_SIMPLE_ATTRIBUTE(pm_regs_enabled_fops,
 			pm_regs_enabled_get,
 			pm_regs_enabled_set, "%llu\n");
 
+<<<<<<< HEAD
 DEFINE_SIMPLE_ATTRIBUTE(pm_ib_enabled_fops,
 			pm_ib_enabled_get,
 			pm_ib_enabled_set, "%llu\n");
 
+=======
+static int ib_dump_on_pagef_enabled_get(void *data, u64 *val)
+{
+	*val = adreno_ib_dump_on_pagef_enabled;
+	return 0;
+}
+
+static int ib_dump_on_pagef_enabled_set(void *data, u64 val)
+{
+	adreno_ib_dump_on_pagef_enabled = val ? 1 : 0;
+	return 0;
+}
+
+DEFINE_SIMPLE_ATTRIBUTE(ib_dump_on_pagef_enabled_fops,
+			ib_dump_on_pagef_enabled_get,
+			ib_dump_on_pagef_enabled_set, "%llu\n");
+>>>>>>> FETCH_HEAD
 
 static int kgsl_cff_dump_enable_set(void *data, u64 val)
 {
@@ -115,11 +138,14 @@ void adreno_debugfs_init(struct kgsl_device *device)
 		&adreno_dev->wait_timeout);
 	debugfs_create_u32("ib_check", 0644, device->d_debugfs,
 			   &adreno_dev->ib_check_level);
+<<<<<<< HEAD
 
 	/* By Default enable fast hang detection */
 	adreno_dev->fast_hang_detect = 1;
 	debugfs_create_u32("fast_hang_detect", 0644, device->d_debugfs,
 			   &adreno_dev->fast_hang_detect);
+=======
+>>>>>>> FETCH_HEAD
 
 	/* Create post mortem control files */
 
@@ -132,6 +158,12 @@ void adreno_debugfs_init(struct kgsl_device *device)
 			    &pm_dump_fops);
 	debugfs_create_file("regs_enabled", 0644, pm_d_debugfs, device,
 			    &pm_regs_enabled_fops);
+<<<<<<< HEAD
 	debugfs_create_file("ib_enabled", 0644, pm_d_debugfs, device,
 				    &pm_ib_enabled_fops);
+=======
+
+	debugfs_create_file("ib_dump_on_pagefault", 0644, device->d_debugfs,
+				device, &ib_dump_on_pagef_enabled_fops);
+>>>>>>> FETCH_HEAD
 }

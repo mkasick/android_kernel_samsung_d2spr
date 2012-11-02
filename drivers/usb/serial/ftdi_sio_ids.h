@@ -517,6 +517,11 @@
  */
 #define FTDI_TAVIR_STK500_PID	0xFA33	/* STK500 AVR programmer */
 
+/*
+ * TIAO product ids (FTDI_VID)
+ * http://www.tiaowiki.com/w/Main_Page
+ */
+#define FTDI_TIAO_UMPA_PID	0x8a98	/* TIAO/DIYGADGET USB Multi-Protocol Adapter */
 
 
 /********************************/
@@ -825,6 +830,7 @@
  */
 #define KONDO_VID 		0x165c
 #define KONDO_USB_SERIAL_PID	0x0002
+<<<<<<< HEAD
 
 /*
  * Kondo Kagaku Co.Ltd.
@@ -832,6 +838,8 @@
  */
 #define KONDO_VID 		0x165c
 #define KONDO_USB_SERIAL_PID	0x0002
+=======
+>>>>>>> FETCH_HEAD
 
 /*
  * Bayer Ascensia Contour blood glucose meter USB-converter cable.
@@ -1242,6 +1250,7 @@
  */
 /* TagTracer MIFARE*/
 #define FTDI_ZEITCONTROL_TAGTRACE_MIFARE_PID	0xF7C0
+<<<<<<< HEAD
 
 /*
  * Rainforest Automation
@@ -1250,6 +1259,16 @@
 #define FTDI_RF_R106		0x8A28
 
 /*
+=======
+
+/*
+ * Rainforest Automation
+ */
+/* ZigBee controller */
+#define FTDI_RF_R106		0x8A28
+
+/*
+>>>>>>> FETCH_HEAD
  * Product: HCP HIT GPRS modem
  * Manufacturer: HCP d.o.o.
  * ATI command output: Cinterion MC55i

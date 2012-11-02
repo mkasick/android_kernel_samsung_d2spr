@@ -35,7 +35,11 @@ struct compact_control {
 	unsigned long migrate_pfn;	/* isolate_migratepages search base */
 	bool sync;			/* Synchronous migration */
 
+<<<<<<< HEAD
 	int order;			/* order a direct compactor needs */
+=======
+	unsigned int order;		/* order a direct compactor needs */
+>>>>>>> FETCH_HEAD
 	int migratetype;		/* MOVABLE, RECLAIMABLE etc */
 	struct zone *zone;
 };

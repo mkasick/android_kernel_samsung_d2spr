@@ -681,10 +681,16 @@ void kgsl_late_resume_driver(struct early_suspend *h)
 					struct kgsl_device, display_off);
 	KGSL_PWR_WARN(device, "late resume start\n");
 	mutex_lock(&device->mutex);
+<<<<<<< HEAD
 	device->pwrctrl.restore_slumber = false;
 	if (device->pwrscale.policy == NULL)
 		kgsl_pwrctrl_pwrlevel_change(device, KGSL_PWRLEVEL_TURBO);
 	kgsl_pwrctrl_wake(device);
+=======
+	device->pwrctrl.restore_slumber = 0;
+	kgsl_pwrctrl_wake(device);
+	kgsl_pwrctrl_pwrlevel_change(device, KGSL_PWRLEVEL_TURBO);
+>>>>>>> FETCH_HEAD
 	mutex_unlock(&device->mutex);
 	kgsl_check_idle(device);
 	KGSL_PWR_WARN(device, "late resume end\n");
@@ -764,7 +770,11 @@ kgsl_put_process_private(struct kgsl_device *device,
 		node = rb_next(&entry->node);
 
 		rb_erase(&entry->node, &private->mem_rb);
+<<<<<<< HEAD
 		kgsl_mem_entry_detach_process(entry);
+=======
+		kgsl_mem_entry_put(entry);
+>>>>>>> FETCH_HEAD
 	}
 	kgsl_mmu_putpagetable(private->pagetable);
 	kfree(private);
@@ -902,9 +912,12 @@ kgsl_sharedmem_find_region(struct kgsl_process_private *private,
 {
 	struct rb_node *node = private->mem_rb.rb_node;
 
+<<<<<<< HEAD
 	if (!kgsl_mmu_gpuaddr_in_range(gpuaddr))
 		return NULL;
 
+=======
+>>>>>>> FETCH_HEAD
 	while (node != NULL) {
 		struct kgsl_mem_entry *entry;
 
@@ -1054,6 +1067,7 @@ static long _device_waittimestamp(struct kgsl_device_private *dev_priv,
 
 	return result;
 }
+<<<<<<< HEAD
 
 static long kgsl_ioctl_device_waittimestamp(struct kgsl_device_private
 						*dev_priv, unsigned int cmd,
@@ -1090,6 +1104,8 @@ static long kgsl_ioctl_device_waittimestamp_ctxtid(struct kgsl_device_private
 	kgsl_context_put(context);
 	return result;
 }
+=======
+>>>>>>> FETCH_HEAD
 
 static long kgsl_ioctl_rb_issueibcmds(struct kgsl_device_private *dev_priv,
 				      unsigned int cmd, void *data)
@@ -1175,7 +1191,11 @@ static long kgsl_ioctl_rb_issueibcmds(struct kgsl_device_private *dev_priv,
 					     &param->timestamp,
 					     param->flags);
 
+<<<<<<< HEAD
 	trace_kgsl_issueibcmds(dev_priv->device, param, ibdesc, result);
+=======
+	trace_kgsl_issueibcmds(dev_priv->device, param, result);
+>>>>>>> FETCH_HEAD
 
 free_ibdesc:
 	kfree(ibdesc);
@@ -2656,7 +2676,7 @@ static int __init kgsl_core_init(void)
 				  KGSL_NAME);
 	if (result < 0) {
 		KGSL_CORE_ERR("alloc_chrdev_region failed err = %d\n", result);
-		goto err;
+		goto alloc_chrdev_region_err;
 	}
 
 	cdev_init(&kgsl_driver.cdev, &kgsl_fops);
@@ -2668,7 +2688,7 @@ static int __init kgsl_core_init(void)
 	if (result) {
 		KGSL_CORE_ERR("kgsl: cdev_add() failed, dev_num= %d,"
 			     " result= %d\n", kgsl_driver.major, result);
-		goto err;
+		goto cdev_add_err;
 	}
 
 	kgsl_driver.class = class_create(THIS_MODULE, KGSL_NAME);
@@ -2676,7 +2696,7 @@ static int __init kgsl_core_init(void)
 	if (IS_ERR(kgsl_driver.class)) {
 		result = PTR_ERR(kgsl_driver.class);
 		KGSL_CORE_ERR("failed to create class %s", KGSL_NAME);
-		goto err;
+		goto err_class_create;
 	}
 
 	/* Make a virtual device for managing core related things
@@ -2686,7 +2706,7 @@ static int __init kgsl_core_init(void)
 	result = device_register(&kgsl_driver.virtdev);
 	if (result) {
 		KGSL_CORE_ERR("driver_register failed\n");
-		goto err;
+		goto err_device_register;
 	}
 
 	/* Make kobjects in the virtual device for storing statistics */
@@ -2713,11 +2733,23 @@ static int __init kgsl_core_init(void)
 	if (KGSL_MMU_TYPE_GPU == kgsl_mmu_get_mmutype()) {
 		result = kgsl_ptdata_init();
 		if (result)
-			goto err;
+			goto err_mmu_set;
 	}
 
 	return 0;
 
+err_mmu_set:
+	device_unregister(&kgsl_driver.virtdev);
+err_device_register:
+	if (kgsl_driver.class) {
+		class_destroy(kgsl_driver.class);
+		kgsl_driver.class = NULL;
+	}
+err_class_create:
+cdev_add_err:
+	unregister_chrdev_region(kgsl_driver.major, KGSL_DEVICE_MAX);
+alloc_chrdev_region_err:
+	return result;
 err:
 	kgsl_core_exit();
 	return result;

@@ -509,6 +509,11 @@ _kgsl_sharedmem_page_alloc(struct kgsl_memdesc *memdesc,
 
 	memdesc->sg = kgsl_sg_alloc(sglen);
 
+<<<<<<< HEAD
+=======
+	memdesc->sg = kgsl_sg_alloc(sglen);
+
+>>>>>>> FETCH_HEAD
 	if (memdesc->sg == NULL) {
 		KGSL_CORE_ERR("vmalloc(%d) failed\n",
 			sglen * sizeof(struct scatterlist));
@@ -612,6 +617,8 @@ _kgsl_sharedmem_page_alloc(struct kgsl_memdesc *memdesc,
 			kunmap_atomic(ptr);
 		}
 	}
+	outer_cache_range_op_sg(memdesc->sg, memdesc->sglen,
+				KGSL_CACHE_OP_FLUSH);
 
 	outer_cache_range_op_sg(memdesc->sg, memdesc->sglen,
 				KGSL_CACHE_OP_FLUSH);

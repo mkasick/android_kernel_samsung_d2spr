@@ -351,12 +351,21 @@ int ion_carveout_heap_map_iommu(struct ion_buffer *buffer,
 	sglist = vmalloc(sizeof(*sglist));
 	if (!sglist)
 		goto out1;
+<<<<<<< HEAD
 
 	sg_init_table(sglist, 1);
 	sglist->length = buffer->size;
 	sglist->offset = 0;
 	sglist->dma_address = buffer->priv_phys;
 
+=======
+
+	sg_init_table(sglist, 1);
+	sglist->length = buffer->size;
+	sglist->offset = 0;
+	sglist->dma_address = buffer->priv_phys;
+
+>>>>>>> FETCH_HEAD
 	ret = iommu_map_range(domain, data->iova_addr, sglist,
 			      buffer->size, prot);
 	if (ret) {

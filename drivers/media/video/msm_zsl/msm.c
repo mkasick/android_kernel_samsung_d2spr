@@ -183,8 +183,17 @@ static int msm_server_control(struct msm_cam_server_dev *server_dev,
 		if (!rc)
 			rc = -ETIMEDOUT;
 		if (rc < 0) {
+<<<<<<< HEAD
 			if (g_server_dev.server_evt_id == 0)
 				g_server_dev.server_evt_id++;
+=======
+			rcmd = msm_dequeue(queue, list_control);
+			if (rcmd) {
+				free_qcmd(rcmd);
+				rcmd = NULL;
+			}
+			kfree(isp_event);
+>>>>>>> FETCH_HEAD
 			pr_err("%s: wait_event error %d\n", __func__, rc);
 			return rc;
 		}
@@ -206,6 +215,10 @@ static int msm_server_control(struct msm_cam_server_dev *server_dev,
 		free_qcmd(rcmd);
 		rcmd = NULL;
 	}
+<<<<<<< HEAD
+=======
+	kfree(isp_event);
+>>>>>>> FETCH_HEAD
 	D("%s: rc %d\n", __func__, rc);
 	/* rc is the time elapsed. */
 	if (rc >= 0) {
@@ -1679,8 +1692,12 @@ static int msm_close(struct file *f)
 	}
 
 	mutex_lock(&pcam->vid_lock);
+<<<<<<< HEAD
 	mutex_lock(&pcam_inst->inst_lock);
 
+=======
+#if defined(CONFIG_MSM_IOMMU)
+>>>>>>> FETCH_HEAD
 	if (pcam_inst->streamon) {
 		/*something went wrong since instance
 		is closing without streamoff*/
@@ -1691,7 +1708,11 @@ static int msm_close(struct file *f)
 		}
 		pcam->mctl.mctl_release = NULL;/*so that it isn't closed again*/
 	}
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> FETCH_HEAD
 	pcam_inst->streamon = 0;
 	pcam->use_count--;
 	pcam->dev_inst_map[pcam_inst->image_mode] = NULL;

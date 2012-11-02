@@ -120,6 +120,7 @@ struct kgsl_pagetable {
 struct kgsl_mmu;
 
 struct kgsl_mmu_ops {
+<<<<<<< HEAD
 	int (*mmu_init) (struct kgsl_mmu *mmu);
 	int (*mmu_close) (struct kgsl_mmu *mmu);
 	int (*mmu_start) (struct kgsl_mmu *mmu);
@@ -128,6 +129,16 @@ struct kgsl_mmu_ops {
 		struct kgsl_pagetable *pagetable,
 		unsigned int context_id);
 	void (*mmu_device_setstate) (struct kgsl_mmu *mmu,
+=======
+	int (*mmu_init) (struct kgsl_device *device);
+	int (*mmu_close) (struct kgsl_device *device);
+	int (*mmu_start) (struct kgsl_device *device);
+	int (*mmu_stop) (struct kgsl_device *device);
+	void (*mmu_setstate) (struct kgsl_device *device,
+		struct kgsl_pagetable *pagetable,
+		unsigned int context_id);
+	void (*mmu_device_setstate) (struct kgsl_device *device,
+>>>>>>> FETCH_HEAD
 					uint32_t flags);
 	void (*mmu_pagefault) (struct kgsl_mmu *mmu);
 	unsigned int (*mmu_get_current_ptbase)
@@ -194,8 +205,16 @@ int kgsl_mmu_map_global(struct kgsl_pagetable *pagetable,
 int kgsl_mmu_unmap(struct kgsl_pagetable *pagetable,
 		    struct kgsl_memdesc *memdesc);
 unsigned int kgsl_virtaddr_to_physaddr(void *virtaddr);
+<<<<<<< HEAD
 void kgsl_setstate(struct kgsl_mmu *mmu, unsigned int context_id,
 			uint32_t flags);
+=======
+void kgsl_setstate(struct kgsl_device *device, unsigned int context_id,
+			uint32_t flags);
+void kgsl_mmu_device_setstate(struct kgsl_device *device, uint32_t flags);
+void kgsl_mmu_setstate(struct kgsl_device *device,
+			struct kgsl_pagetable *pt, unsigned int context_id);
+>>>>>>> FETCH_HEAD
 int kgsl_mmu_get_ptname_from_ptbase(unsigned int pt_base);
 int kgsl_mmu_pt_get_flags(struct kgsl_pagetable *pt,
 			enum kgsl_deviceid id);
@@ -205,6 +224,7 @@ int kgsl_mmu_enabled(void);
 void kgsl_mmu_set_mmutype(char *mmutype);
 enum kgsl_mmutype kgsl_mmu_get_mmutype(void);
 unsigned int kgsl_mmu_get_ptsize(void);
+<<<<<<< HEAD
 
 /*
  * Static inline functions of MMU that simply call the SMMU specific
@@ -317,4 +337,6 @@ static inline unsigned int kgsl_mmu_get_int_mask(void)
 			MH_INTERRUPT_MASK__AXI_WRITE_ERROR);
 }
 
+=======
+>>>>>>> FETCH_HEAD
 #endif /* __KGSL_MMU_H */

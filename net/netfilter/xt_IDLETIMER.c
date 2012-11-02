@@ -68,6 +68,7 @@ static DEFINE_MUTEX(list_mutex);
 
 static struct kobject *idletimer_tg_kobj;
 
+<<<<<<< HEAD
 static void notify_netlink_uevent(const char *label, struct idletimer_tg *timer)
 {
 	char label_msg[NLMSG_MAX_SIZE];
@@ -77,6 +78,17 @@ static void notify_netlink_uevent(const char *label, struct idletimer_tg *timer)
 
 	res = snprintf(label_msg, NLMSG_MAX_SIZE, "LABEL=%s",
 		       label);
+=======
+static void notify_netlink_uevent(const char *iface, struct idletimer_tg *timer)
+{
+	char iface_msg[NLMSG_MAX_SIZE];
+	char state_msg[NLMSG_MAX_SIZE];
+	char *envp[] = { iface_msg, state_msg, NULL };
+	int res;
+
+	res = snprintf(iface_msg, NLMSG_MAX_SIZE, "INTERFACE=%s",
+		       iface);
+>>>>>>> FETCH_HEAD
 	if (NLMSG_MAX_SIZE <= res) {
 		pr_err("message too long (%d)", res);
 		return;
@@ -87,7 +99,11 @@ static void notify_netlink_uevent(const char *label, struct idletimer_tg *timer)
 		pr_err("message too long (%d)", res);
 		return;
 	}
+<<<<<<< HEAD
 	pr_debug("putting nlmsg: <%s> <%s>\n", label_msg, state_msg);
+=======
+	pr_debug("putting nlmsg: <%s> <%s>\n", iface_msg, state_msg);
+>>>>>>> FETCH_HEAD
 	kobject_uevent_env(idletimer_tg_kobj, KOBJ_CHANGE, envp);
 	return;
 

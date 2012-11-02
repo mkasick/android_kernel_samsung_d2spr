@@ -1101,7 +1101,14 @@ __getblk_slow(struct block_device *bdev, sector_t block, int size)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 retry:
+=======
+	for (;;) {
+		struct buffer_head *bh;
+		int ret;
+
+>>>>>>> FETCH_HEAD
 	bh = __find_get_block(bdev, block, size);
 	if (bh)
 		return bh;

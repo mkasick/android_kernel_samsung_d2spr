@@ -104,7 +104,11 @@ void adreno_ringbuffer_stop(struct adreno_ringbuffer *rb);
 
 void adreno_ringbuffer_close(struct adreno_ringbuffer *rb);
 
+<<<<<<< HEAD
 unsigned int adreno_ringbuffer_issuecmds(struct kgsl_device *device,
+=======
+void adreno_ringbuffer_issuecmds(struct kgsl_device *device,
+>>>>>>> FETCH_HEAD
 					struct adreno_context *drawctxt,
 					unsigned int flags,
 					unsigned int *cmdaddr,
@@ -121,8 +125,14 @@ void
 adreno_ringbuffer_restore(struct adreno_ringbuffer *rb, unsigned int *rb_buff,
 			int num_rb_contents);
 
+<<<<<<< HEAD
 unsigned int *adreno_ringbuffer_allocspace(struct adreno_ringbuffer *rb,
 					     unsigned int numcmds);
+=======
+void adreno_print_fault_ib_work(struct work_struct *work);
+
+void adreno_print_fault_ib(struct kgsl_device *device);
+>>>>>>> FETCH_HEAD
 
 static inline int adreno_ringbuffer_count(struct adreno_ringbuffer *rb,
 	unsigned int rptr)

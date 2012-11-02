@@ -17,8 +17,13 @@
 
 int adreno_debugfs_init(struct kgsl_device *device);
 
+<<<<<<< HEAD
 extern int adreno_pm_regs_enabled;
 extern int adreno_pm_ib_enabled;
+=======
+extern int kgsl_pm_regs_enabled;
+extern int adreno_ib_dump_on_pagef_enabled;
+>>>>>>> FETCH_HEAD
 
 static inline int is_adreno_pm_regs_enabled(void)
 {
@@ -41,6 +46,12 @@ static inline int kgsl_pmregs_enabled(void)
 	/* If debugfs is turned off, then always print registers */
 	return 1;
 }
+
 #endif
+
+static inline int is_adreno_ib_dump_on_pagef_enabled(struct kgsl_device *device)
+{
+	return adreno_ib_dump_on_pagef_enabled;
+}
 
 #endif /* __ADRENO_DEBUGFS_H */

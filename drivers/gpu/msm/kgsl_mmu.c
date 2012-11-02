@@ -309,6 +309,25 @@ err:
 }
 
 unsigned int kgsl_mmu_get_ptsize(void)
+<<<<<<< HEAD
+=======
+{
+	/*
+	 * For IOMMU, we could do up to 4G virtual range if we wanted to, but
+	 * it makes more sense to return a smaller range and leave the rest of
+	 * the virtual range for future improvements
+	 */
+
+	if (KGSL_MMU_TYPE_GPU == kgsl_mmu_type)
+		return CONFIG_MSM_KGSL_PAGE_TABLE_SIZE;
+	else if (KGSL_MMU_TYPE_IOMMU == kgsl_mmu_type)
+		return SZ_2G;
+	else
+		return 0;
+}
+
+unsigned int kgsl_mmu_get_current_ptbase(struct kgsl_device *device)
+>>>>>>> FETCH_HEAD
 {
 	/*
 	 * For IOMMU, we could do up to 4G virtual range if we wanted to, but
@@ -343,6 +362,23 @@ kgsl_mmu_get_ptname_from_ptbase(unsigned int pt_base)
 }
 EXPORT_SYMBOL(kgsl_mmu_get_ptname_from_ptbase);
 
+<<<<<<< HEAD
+=======
+void kgsl_mmu_setstate(struct kgsl_device *device,
+			struct kgsl_pagetable *pagetable,
+			unsigned int context_id)
+{
+	struct kgsl_mmu *mmu = &device->mmu;
+
+	if (KGSL_MMU_TYPE_NONE == kgsl_mmu_type)
+		return;
+	else
+		mmu->mmu_ops->mmu_setstate(device,
+					pagetable, context_id);
+}
+EXPORT_SYMBOL(kgsl_mmu_setstate);
+
+>>>>>>> FETCH_HEAD
 int kgsl_mmu_init(struct kgsl_device *device)
 {
 	int status = 0;
@@ -542,7 +578,11 @@ void kgsl_mmu_putpagetable(struct kgsl_pagetable *pagetable)
 }
 EXPORT_SYMBOL(kgsl_mmu_putpagetable);
 
+<<<<<<< HEAD
 void kgsl_setstate(struct kgsl_mmu *mmu, unsigned int context_id,
+=======
+void kgsl_setstate(struct kgsl_device *device, unsigned int context_id,
+>>>>>>> FETCH_HEAD
 			uint32_t flags)
 {
 	struct kgsl_device *device = mmu->device;

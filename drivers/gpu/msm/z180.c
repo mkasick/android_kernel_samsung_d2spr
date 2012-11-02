@@ -444,6 +444,7 @@ z180_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
 	    (ctrl & KGSL_CONTEXT_CTX_SWITCH)) {
 		KGSL_CMD_INFO(device, "context switch %d -> %d\n",
 			context->id, z180_dev->ringbuffer.prevctx);
+<<<<<<< HEAD
 		kgsl_mmu_setstate(&device->mmu, pagetable,
 				KGSL_MEMSTORE_GLOBAL);
 		cnt = PACKETSIZE_STATESTREAM;
@@ -452,6 +453,14 @@ z180_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
 	kgsl_setstate(&device->mmu,
 			KGSL_MEMSTORE_GLOBAL,
 			kgsl_mmu_pt_get_flags(device->mmu.hwpagetable,
+=======
+		kgsl_mmu_setstate(device, pagetable,
+				0);
+		cnt = PACKETSIZE_STATESTREAM;
+		ofs = 0;
+	}
+	kgsl_setstate(device, 0, kgsl_mmu_pt_get_flags(device->mmu.hwpagetable,
+>>>>>>> FETCH_HEAD
 			device->id));
 
 	result = wait_event_interruptible_timeout(device->wait_queue,
@@ -476,10 +485,20 @@ z180_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
 	/* Make sure the next ringbuffer entry has a marker */
 	addmarker(&z180_dev->ringbuffer, z180_dev->current_timestamp);
 
+<<<<<<< HEAD
 	/* monkey patch the IB so that it jumps back to the ringbuffer */
 	kgsl_sharedmem_writel(&entry->memdesc,
 		      ((sizedwords + 1) * sizeof(unsigned int)),
 		      rb_gpuaddr(z180_dev, z180_dev->current_timestamp));
+=======
+	nextaddr = z180_dev->ringbuffer.cmdbufdesc.gpuaddr
+		+ rb_offset(nextindex);
+
+	/* monkey patch the IB so that it jumps back to the ringbuffer */
+	kgsl_sharedmem_writel(&entry->memdesc,
+			      ((sizedwords + 1) * sizeof(unsigned int)),
+			      nextaddr);
+>>>>>>> FETCH_HEAD
 	kgsl_sharedmem_writel(&entry->memdesc,
 			      ((sizedwords + 2) * sizeof(unsigned int)),
 			      nextcnt);
@@ -863,7 +882,11 @@ z180_drawctxt_destroy(struct kgsl_device *device,
 	if (z180_dev->ringbuffer.prevctx == context->id) {
 		z180_dev->ringbuffer.prevctx = Z180_INVALID_CONTEXT;
 		device->mmu.hwpagetable = device->mmu.defaultpagetable;
+<<<<<<< HEAD
 		kgsl_setstate(&device->mmu, KGSL_MEMSTORE_GLOBAL,
+=======
+		kgsl_setstate(device, 0,
+>>>>>>> FETCH_HEAD
 				KGSL_MMUFLAGS_PTUPDATE);
 	}
 }

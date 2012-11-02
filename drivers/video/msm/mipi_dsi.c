@@ -38,7 +38,11 @@
 #include "mipi_samsung_esd_refresh.h"
 #endif
 
+<<<<<<< HEAD
 int dsi_irq;
+=======
+u32 dsi_irq;
+>>>>>>> FETCH_HEAD
 u32 esc_byte_ratio;
 
 static boolean tlmm_settings = FALSE;
@@ -82,6 +86,8 @@ static int mipi_dsi_off(struct platform_device *pdev)
 		mutex_lock(&mfd->dma->ov_mutex);
 	else
 		down(&mfd->dma->mutex);
+
+	pr_info("entering %s\n", __func__);
 
 	mdp4_overlay_dsi_state_set(ST_DSI_SUSPEND);
 
@@ -140,9 +146,15 @@ static int mipi_dsi_off(struct platform_device *pdev)
 	else
 		up(&mfd->dma->mutex);
 
+<<<<<<< HEAD
+=======
+	pr_info("exiting %s\n", __func__);
+
+>>>>>>> FETCH_HEAD
 	return ret;
 }
 
+extern struct mdp4_overlay_perf perf_current;
 static int mipi_dsi_on(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -313,7 +325,8 @@ static int mipi_dsi_on(struct platform_device *pdev)
 						gpio_direction_input(
 							vsync_gpio);
 					else
-						pr_err("%s: unable to request gpio=%d\n",
+						pr_err("%s: unable to \
+							request gpio=%d\n",
 							__func__, vsync_gpio);
 				} else if (mdp_rev == MDP_REV_303) {
 					if (!tlmm_settings && gpio_request(
@@ -327,7 +340,9 @@ static int mipi_dsi_on(struct platform_device *pdev)
 							GPIO_CFG_ENABLE);
 
 						if (ret) {
-							pr_err("%s: unable to config tlmm = %d\n",
+							pr_err(
+							"%s: unable to config \
+							tlmm = %d\n",
 							__func__, vsync_gpio);
 						}
 						tlmm_settings = TRUE;
@@ -336,7 +351,9 @@ static int mipi_dsi_on(struct platform_device *pdev)
 							vsync_gpio);
 					} else {
 						if (!tlmm_settings) {
-							pr_err("%s: unable to request gpio=%d\n",
+							pr_err(
+							"%s: unable to request \
+							gpio=%d\n",
 							__func__, vsync_gpio);
 						}
 					}
@@ -348,6 +365,8 @@ static int mipi_dsi_on(struct platform_device *pdev)
 
 #ifdef CONFIG_MSM_BUS_SCALING
 	mdp_bus_scale_update_request(2);
+	perf_current.mdp_bw = OVERLAY_PERF_LEVEL4;	
+	perf_current.mdp_clk_rate = 0;
 #endif
 
 	mdp4_overlay_dsi_state_set(ST_DSI_RESUME);
@@ -357,9 +376,13 @@ static int mipi_dsi_on(struct platform_device *pdev)
 	else
 		up(&mfd->dma->mutex);
 
+<<<<<<< HEAD
+=======
+	pr_info("exiting %s\n", __func__);
+
+>>>>>>> FETCH_HEAD
 	return ret;
 }
-
 
 static int mipi_dsi_resource_initialized;
 
@@ -449,8 +472,16 @@ static int mipi_dsi_probe(struct platform_device *pdev)
 			}
 		}
 
+<<<<<<< HEAD
 		if (mipi_dsi_clk_init(pdev))
 			return -EPERM;
+=======
+		if (mipi_dsi_clk_init(pdev)){
+			free_irq(dsi_irq,0);
+			iounmap(periph_base);
+			return -EPERM;
+		}
+>>>>>>> FETCH_HEAD
 
 		if (mipi_dsi_pdata->splash_is_enabled &&
 			!mipi_dsi_pdata->splash_is_enabled()) {
@@ -611,6 +642,7 @@ static int mipi_dsi_probe(struct platform_device *pdev)
 		goto mipi_dsi_probe_err;
 
 	pdev_list[pdev_list_cnt++] = pdev;
+
 #if defined(CONFIG_MIPI_SAMSUNG_ESD_REFRESH)
 	register_mipi_dev(pdev);
 #endif

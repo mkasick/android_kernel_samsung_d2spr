@@ -117,6 +117,11 @@ memdesc_sg_phys(struct kgsl_memdesc *memdesc,
 		unsigned int physaddr, unsigned int size)
 {
 	memdesc->sg = kgsl_sg_alloc(1);
+<<<<<<< HEAD
+=======
+
+	kmemleak_not_leak(memdesc->sg);
+>>>>>>> FETCH_HEAD
 
 	kmemleak_not_leak(memdesc->sg);
 

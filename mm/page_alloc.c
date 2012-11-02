@@ -1928,7 +1928,11 @@ __alloc_pages_direct_compact(gfp_t gfp_mask, unsigned int order,
 	if (!order)
 		return NULL;
 
+<<<<<<< HEAD
 	if (compaction_deferred(preferred_zone, order)) {
+=======
+	if (compaction_deferred(preferred_zone)) {
+>>>>>>> FETCH_HEAD
 		*deferred_compaction = true;
 		return NULL;
 	}
@@ -1968,7 +1972,11 @@ __alloc_pages_direct_compact(gfp_t gfp_mask, unsigned int order,
 		 * defer if the failure was a sync compaction failure.
 		 */
 		if (sync_migration)
+<<<<<<< HEAD
 			defer_compaction(preferred_zone, order);
+=======
+			defer_compaction(preferred_zone);
+>>>>>>> FETCH_HEAD
 
 		cond_resched();
 	}

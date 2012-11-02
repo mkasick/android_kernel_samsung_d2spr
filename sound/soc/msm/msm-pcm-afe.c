@@ -412,9 +412,17 @@ static int msm_afe_close(struct snd_pcm_substream *substream)
 	if (dma_buf->area) {
 		dma_buf->area = NULL;
 	}
+<<<<<<< HEAD
 
 	q6asm_audio_client_buf_free_contiguous(dir,
 				prtd->audio_client);
+=======
+	}
+
+	if (dma_buf->addr)
+		free_contiguous_memory_by_paddr(dma_buf->addr);	
+		
+>>>>>>> FETCH_HEAD
 done:
 	pr_debug("%s: dai->id =%x\n", __func__, dai->id);
 	q6asm_audio_client_free(prtd->audio_client);

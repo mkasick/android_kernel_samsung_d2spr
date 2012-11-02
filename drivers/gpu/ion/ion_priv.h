@@ -314,9 +314,12 @@ int ion_do_cache_op(struct ion_client *client, struct ion_handle *handle,
 			void *uaddr, unsigned long offset, unsigned long len,
 			unsigned int cmd);
 
+<<<<<<< HEAD
 void ion_cp_heap_get_base(struct ion_heap *heap, unsigned long *base,
 			unsigned long *size);
 
 void ion_mem_map_show(struct ion_heap *heap);
 
+=======
+>>>>>>> FETCH_HEAD
 #endif /* _ION_PRIV_H */

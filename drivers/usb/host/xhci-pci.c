@@ -149,6 +149,10 @@ static int xhci_pci_setup(struct usb_hcd *hcd)
 		 * PPT chipsets.
 		 */
 		xhci->quirks |= XHCI_SPURIOUS_REBOOT;
+<<<<<<< HEAD
+=======
+		xhci->quirks |= XHCI_AVOID_BEI;
+>>>>>>> FETCH_HEAD
 	}
 	if (pdev->vendor == PCI_VENDOR_ID_ETRON &&
 			pdev->device == PCI_DEVICE_ID_ASROCK_P67) {

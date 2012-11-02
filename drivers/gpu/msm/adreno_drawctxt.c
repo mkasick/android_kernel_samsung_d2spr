@@ -203,6 +203,10 @@ void adreno_drawctxt_destroy(struct kgsl_device *device,
 		return;
 
 	drawctxt = context->devctxt;
+<<<<<<< HEAD
+=======
+
+>>>>>>> FETCH_HEAD
 	/* deactivate context */
 	if (adreno_dev->drawctxt_active == drawctxt) {
 		/* no need to save GMEM or shader, the context is
@@ -289,3 +293,5 @@ void adreno_drawctxt_switch(struct adreno_device *adreno_dev,
 	adreno_dev->gpudev->ctxt_restore(adreno_dev, drawctxt);
 	adreno_dev->drawctxt_active = drawctxt;
 }
+
+

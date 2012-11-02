@@ -38,9 +38,12 @@
 #include <mach/socinfo.h>
 #include <../../mm/mm.h>
 #include <linux/fmem.h>
+#include <mach/msm8960-gpio.h>
 
 void *strongly_ordered_page;
 char strongly_ordered_mem[PAGE_SIZE*2-4];
+
+#define MAX_FIXED_AREA_SIZE 0x10000000
 
 void map_page_strongly_ordered(void)
 {
@@ -294,6 +297,30 @@ static void __init reserve_memory_for_mempools(void)
 	}
 }
 
+<<<<<<< HEAD
+=======
+unsigned long __init reserve_memory_for_fmem(unsigned long fmem_size, 
+						unsigned long align)
+{
+	struct membank *mb;
+	int ret;
+	unsigned long fmem_phys;
+
+	if (!fmem_size)
+		return 0;
+
+	mb = &meminfo.bank[meminfo.nr_banks - 1];
+	
+	fmem_phys = mb->start + (mb->size - fmem_size);
+	fmem_phys = ALIGN(fmem_phys-align+1, align);
+	ret = memblock_remove(fmem_phys, fmem_size);
+	BUG_ON(ret);
+
+	pr_info("fmem start %lx size %lx\n", fmem_phys, fmem_size);
+	return fmem_phys;
+}
+
+>>>>>>> FETCH_HEAD
 static void __init initialize_mempools(void)
 {
 	struct mem_pool *mpool;
@@ -311,7 +338,27 @@ static void __init initialize_mempools(void)
 	}
 }
 
+<<<<<<< HEAD
 #define  MAX_FIXED_AREA_SIZE 0x11000000
+=======
+static int support_2gb_ddr(void)
+{
+#if defined(CONFIG_MACH_M2_ATT) /* D2_ATT , D2_TMO, D2_CAN */
+	if (system_rev >= BOARD_REV16)
+#elif defined(CONFIG_MACH_M2_SPR) /* D2_SPR, D2_CSPIRE */
+	if (system_rev >= BOARD_REV14)
+#elif defined(CONFIG_MACH_M2_VZW) /* D2_VZW, D2_USCC, D2_MPCS, D2_CRIKET */
+	if (system_rev >= BOARD_REV15)
+#elif defined(CONFIG_MACH_M2_DCM) || defined(CONFIG_MACH_K2_KDI)
+	if (system_rev >= BOARD_REV08)
+#else
+	if (false)
+#endif
+		return true;
+	else
+		return false;
+}
+>>>>>>> FETCH_HEAD
 
 void __init msm_reserve(void)
 {
@@ -323,11 +370,24 @@ void __init msm_reserve(void)
 
 	msm_fixed_area_size = reserve_info->fixed_area_size;
 	msm_fixed_area_start = reserve_info->fixed_area_start;
+<<<<<<< HEAD
 	if (msm_fixed_area_size)
 		if (msm_fixed_area_start > reserve_info->low_unstable_address
 			- MAX_FIXED_AREA_SIZE)
 			reserve_info->low_unstable_address =
 			msm_fixed_area_start;
+=======
+	if (msm_fixed_area_size) {
+		if (support_2gb_ddr()) {
+			if (msm_fixed_area_start > \
+					reserve_info->low_unstable_address - MAX_FIXED_AREA_SIZE)
+				reserve_info->low_unstable_address \
+					= msm_fixed_area_start;
+		} else {
+			reserve_info->low_unstable_address = msm_fixed_area_start;
+		}
+	}
+>>>>>>> FETCH_HEAD
 
 	calculate_reserve_limits();
 	adjust_reserve_sizes();
