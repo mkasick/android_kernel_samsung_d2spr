@@ -161,6 +161,10 @@
 #ifdef CONFIG_SENSORS_CM36651
 #include <linux/i2c/cm36651.h>
 #endif
+#ifdef CONFIG_REGULATOR_MAX8952
+#include <linux/regulator/max8952.h>
+#include <linux/regulator/machine.h>
+#endif
 #ifdef CONFIG_VIBETONZ
 #include <linux/vibrator.h>
 #endif
@@ -326,7 +330,7 @@ static struct msm_gpiomux_config msm8960_sec_ts_configs[] = {
 #define MSM_ION_MM_SIZE		MSM_PMEM_ADSP_SIZE
 #define MSM_ION_QSECOM_SIZE	0x1700000 /* (24MB) */
 #define MSM_ION_MFC_SIZE	SZ_8K
-#define MSM_ION_AUDIO_SIZE	0x1000 /* 4KB */
+#define MSM_ION_AUDIO_SIZE	MSM_PMEM_AUDIO_SIZE /* 4KB */
 #define MSM_ION_HEAP_NUM	8
 #define MSM_LIQUID_ION_MM_SIZE (MSM_ION_MM_SIZE + 0x600000)
 #define MSM_LIQUID_ION_SF_SIZE MSM_LIQUID_PMEM_SIZE
@@ -657,7 +661,7 @@ struct platform_device fmem_device = {
 
 static void __init adjust_mem_for_liquid(void)
 {
-	unsigned int i;
+	
 
 	if (!pmem_param_set) {
 		if (machine_is_msm8960_liquid())
@@ -667,6 +671,7 @@ static void __init adjust_mem_for_liquid(void)
 			msm_ion_sf_size = MSM_HDMI_PRIM_ION_SF_SIZE;
 
 		if (machine_is_msm8960_liquid() || hdmi_is_primary) {
+			unsigned int i;
 			for (i = 0; i < ion_pdata.nr; i++) {
 				if (ion_pdata.heaps[i].id == ION_SF_HEAP_ID) {
 					ion_pdata.heaps[i].size =
@@ -993,7 +998,7 @@ unsigned int size = 0x100000;
 
 static void __init msm8960_reserve(void)
 {
-	int ret;
+	
 	msm8960_set_display_params(prim_panel_name, ext_panel_name);
 	msm_reserve();
 	if (fmem_pdata.size) {
@@ -1010,6 +1015,7 @@ static void __init msm8960_reserve(void)
 	}
 
 	if (system_rev >= 8) {
+		int ret;
 		pr_err("Reserving memory at address %x size: %x\n",
 			address, size);
 		ret = memblock_remove(address, size);
@@ -1137,7 +1143,7 @@ static void fsa9485_mhl_cb(bool attached, int mhl_charge)
 			set_cable_status = CABLE_TYPE_USB;
 			break;
 		case 2:
-			set_cable_status = CABLE_TYPE_AC;
+            set_cable_status = CABLE_TYPE_HDMI;
 			break;
 		}
 	} else {
@@ -1164,6 +1170,10 @@ static void fsa9485_mhl_cb(bool attached, int mhl_charge)
 	case CABLE_TYPE_NONE:
 		value.intval = POWER_SUPPLY_TYPE_BATTERY;
 		break;
+    case CABLE_TYPE_HDMI:
+        value.intval = POWER_SUPPLY_TYPE_HDMI;
+        break;
+
 	default:
 		pr_err("%s: invalid cable :%d\n", __func__, set_cable_status);
 		return;
@@ -1468,6 +1478,13 @@ static void fsa9485_smartdock_cb(bool attached)
 	msm_otg_set_smartdock_state(attached);
 }
 
+static void fsa9485_audio_dock_cb(bool attached)
+{
+	pr_info("fsa9485_audio_dock_cb attached %d\n", attached);
+
+	msm_otg_set_smartdock_state(attached);
+}
+
 static int fsa9485_dock_init(void)
 {
 	int ret;
@@ -1556,6 +1573,7 @@ static struct fsa9485_platform_data fsa9485_pdata = {
 	.dock_init = fsa9485_dock_init,
 	.usb_cdp_cb = fsa9485_usb_cdp_cb,
 	.smartdock_cb = fsa9485_smartdock_cb,
+	.audio_dock_cb = fsa9485_audio_dock_cb,
 };
 
 static struct i2c_board_info micro_usb_i2c_devices_info[] __initdata = {
@@ -1823,7 +1841,7 @@ void smb347_hw_init(void)
 
 	pr_debug("%s : share gpioi2c with max17048\n", __func__);
 }
-
+ 
 static int smb347_intr_trigger(int status)
 {
 	struct power_supply *psy = power_supply_get_by_name("battery");
@@ -1835,9 +1853,10 @@ static int smb347_intr_trigger(int status)
 	}
 	pr_info("%s : charging status =%d\n", __func__, status);
 
-	value.intval = status;
+    value.intval = POWER_SUPPLY_TYPE_MAINS;
 
-	return psy->set_property(psy, POWER_SUPPLY_PROP_STATUS, &value);
+    return psy->set_property(psy, POWER_SUPPLY_PROP_ONLINE, &value);
+
 }
 
 static struct smb347_platform_data smb347_pdata = {
@@ -3268,7 +3287,7 @@ static struct msm_otg_platform_data msm_otg_pdata;
 static bool vbus_is_on;
 static void msm_hsusb_vbus_power_max8627(bool on)
 {
-	int rc;
+	
 	static struct regulator *mvs_otg_switch;
 	struct pm_gpio param = {
 		.direction	= PM_GPIO_DIR_OUT,
@@ -3286,6 +3305,7 @@ static void msm_hsusb_vbus_power_max8627(bool on)
 		return;
 
 	if (on) {
+		int rc;
 		mvs_otg_switch = regulator_get(&msm8960_device_otg.dev,
 					       "vbus_otg");
 		if (IS_ERR(mvs_otg_switch)) {
@@ -3335,7 +3355,7 @@ static void msm_hsusb_vbus_power_smb347s(bool on)
 {
 	struct power_supply *psy = power_supply_get_by_name("battery");
 	union power_supply_propval value;
-	int ret = 0;
+	
 
 	pr_info("%s, attached %d, vbus_is_on %d\n", __func__, on, vbus_is_on);
 
@@ -3349,7 +3369,7 @@ static void msm_hsusb_vbus_power_smb347s(bool on)
 		value.intval = POWER_SUPPLY_CAPACITY_OTG_DISABLE;
 
 	if (psy) {
-		ret = psy->set_property(psy, POWER_SUPPLY_PROP_OTG, &value);
+		int ret = psy->set_property(psy, POWER_SUPPLY_PROP_OTG, &value);
 		if (ret) {
 			pr_err("%s: fail to set power_suppy otg property(%d)\n",
 				__func__, ret);
@@ -4186,13 +4206,13 @@ static struct sec_jack_zone jack_zones[] = {
 		.jack_type	= SEC_HEADSET_3POLE,
 	},
 	[1] = {
-		.adc_high	= 630,
+		.adc_high	= 1000,
 		.delay_ms	= 10,
 		.check_count	= 10,
 		.jack_type	= SEC_HEADSET_3POLE,
 	},
 	[2] = {
-		.adc_high	= 1720,
+		.adc_high	= 2450,
 		.delay_ms	= 10,
 		.check_count	= 10,
 		.jack_type	= SEC_HEADSET_4POLE,
@@ -4210,17 +4230,17 @@ static struct sec_jack_buttons_zone jack_buttons_zones[] = {
 	{
 		.code		= KEY_MEDIA,
 		.adc_low	= 0,
-		.adc_high	= 93,
+		.adc_high	= 170,
 	},
 	{
 		.code		= KEY_VOLUMEUP,
-		.adc_low	= 94,
-		.adc_high	= 217,
+		.adc_low	= 171,
+		.adc_high	= 360,
 	},
 	{
 		.code		= KEY_VOLUMEDOWN,
-		.adc_low	= 218,
-		.adc_high	= 450,
+		.adc_low	= 361,
+		.adc_high	= 700,
 	},
 };
 
@@ -4274,7 +4294,7 @@ static int sec_jack_get_adc_value(void)
 
 	rc = pm8xxx_adc_mpp_config_read(
 			PM8XXX_AMUX_MPP_3,
-			ADC_MPP_1_AMUX6_SCALE_DEFAULT,
+			ADC_MPP_2_AMUX6,
 			&result);
 	if (rc) {
 		pr_err("%s : error reading mpp %d, rc = %d\n",
@@ -4456,6 +4476,7 @@ static struct platform_device *k2_kdi_devices[] __initdata = {
 	&msm_8960_q6_mss_sw,
 	&msm_8960_riva,
 	&msm_pil_tzapps,
+	&msm_pil_vidc,
 	&msm8960_device_otg,
 	&msm8960_device_gadget_peripheral,
 	&msm_device_hsusb_host,
@@ -4769,10 +4790,59 @@ static struct i2c_board_info msm_camera_boardinfo[] __initdata = {
 };
 #endif
 
+/*Gopal: add for D2_DCM CAM_ISP_CORE power setting by MAX8952*/
+#ifdef CONFIG_REGULATOR_MAX8952
+static int max8952_is_used(void)
+{
+	if (system_rev >= 0x3)
+		return 1;
+	else
+		return 0;
+}
+
+static struct regulator_consumer_supply max8952_consumer =
+	REGULATOR_SUPPLY("cam_isp_core", NULL);
+
+static struct max8952_platform_data k2_kdi_max8952_pdata = {
+	.gpio_vid0	= -1, /* NOT controlled by GPIO, HW default high*/
+	.gpio_vid1	= -1, /* NOT controlled by GPIO, HW default high*/
+	.gpio_en	= CAM_CORE_EN, /*Controlled by GPIO, High enable */
+	.default_mode	= 3, /* vid0 = 1, vid1 = 1 */
+	.dvs_mode	= { 33, 33, 33, 43 }, /* 1.1V, 1.1V, 1.1V, 1.2V*/
+	.sync_freq	= 0, /* default: fastest */
+	.ramp_speed	= 0, /* default: fastest */
+	.reg_data	= {
+		.constraints	= {
+			.name		= "CAM_ISP_CORE",
+			.min_uV		= 770000,
+			.max_uV		= 1400000,
+			.valid_ops_mask	= REGULATOR_CHANGE_VOLTAGE |
+					  REGULATOR_CHANGE_STATUS,
+			.always_on	= 0,
+			.boot_on	= 0,
+		},
+		.num_consumer_supplies	= 1,
+		.consumer_supplies	= &max8952_consumer,
+	},
+};
+#endif /*CONFIG_REGULATOR_MAX8952*/
 #ifdef CONFIG_SAMSUNG_CMC624
 static struct i2c_board_info cmc624_i2c_borad_info[] = {
 	{
 		I2C_BOARD_INFO("cmc624", 0x38),
+	},
+};
+#endif
+
+#ifdef CONFIG_REGULATOR_MAX8952
+static struct i2c_board_info cmc624_max8952_i2c_borad_info[] = {
+	{
+		I2C_BOARD_INFO("cmc624", 0x38),
+	},
+
+	{
+		I2C_BOARD_INFO("max8952", 0xC0>>1),
+		.platform_data = &k2_kdi_max8952_pdata,
 	},
 };
 #endif
@@ -4974,6 +5044,14 @@ static void __init register_i2c_devices(void)
 	u8 mach_mask = 0;
 	int i;
 
+#ifdef CONFIG_REGULATOR_MAX8952
+struct i2c_registry cmc624_max8952_i2c_devices = {
+		I2C_SURF | I2C_FFA | I2C_FLUID ,
+		MSM_CMC624_I2C_BUS_ID,
+		cmc624_max8952_i2c_borad_info,
+		ARRAY_SIZE(cmc624_max8952_i2c_borad_info),
+	};
+#endif /*CONFIG_REGULATOR_MAX8952*/
 #ifdef CONFIG_BATTERY_MAX17040
 	struct i2c_registry msm8960_fg_i2c_devices = {
 		I2C_SURF | I2C_FFA | I2C_FLUID,
@@ -5004,7 +5082,7 @@ static void __init register_i2c_devices(void)
 		mach_mask = I2C_LIQUID;
 	else if (machine_is_msm8960_mtp())
 		mach_mask = I2C_FFA;
-	else if (machine_is_K2_KDI())
+	else if (machine_is_M2_KDI())
 		mach_mask = I2C_FFA;
 	else
 		pr_err("unmatched machine ID in register_i2c_devices\n");
@@ -5016,6 +5094,16 @@ static void __init register_i2c_devices(void)
 						msm8960_i2c_devices[i].info,
 						msm8960_i2c_devices[i].len);
 	}
+#ifdef CONFIG_SAMSUNG_CMC624
+#ifdef CONFIG_REGULATOR_MAX8952
+	if (max8952_is_used()) {
+		k2_kdi_max8952_pdata.gpio_en = gpio_rev(CAM_CORE_EN);
+		i2c_register_board_info(cmc624_max8952_i2c_devices.bus,
+					cmc624_max8952_i2c_devices.info,
+					cmc624_max8952_i2c_devices.len);
+	}
+#endif /*CONFIG_REGULATOR_MAX8952*/
+#endif /*CONFIG_SAMSUNG_CMC624*/
 
 #if defined(CONFIG_BATTERY_MAX17040)
 	if (!is_smb347_using()) {
@@ -5329,7 +5417,7 @@ static void __init samsung_k2_kdi_init(void)
 		platform_add_devices(mdm_devices, ARRAY_SIZE(mdm_devices));
 }
 
-MACHINE_START(K2_KDI, "SAMSUNG K2_KDI")
+MACHINE_START(M2_KDI, "SAMSUNG M2_KDI")
 	.map_io = msm8960_map_io,
 	.reserve = msm8960_reserve,
 	.init_irq = msm8960_init_irq,

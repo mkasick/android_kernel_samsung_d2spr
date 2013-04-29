@@ -1,5 +1,5 @@
 /*
- * m2_dcm-gpio.h
+ * m2_kdi-gpio.h
  *
  * header file supporting gpio functions for Samsung device
  *
